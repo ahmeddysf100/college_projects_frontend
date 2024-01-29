@@ -18,7 +18,7 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "@iconify/json": "2.2.172",
+    "@iconify/json": "^2.2.176",
     "@nuxt/ui": "2.12.3",
     "@pinia/nuxt": "^0.5.1",
     "pinia": "^2.1.7",
