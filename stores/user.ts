@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
-import type { User, jwt, login } from "~/types";
+import type { Signup, User, jwt, login } from "~/types";
 
 export const useUserStore = defineStore("user", () => {
-  const user = ref();
+  
+  const useModel = useMyModalErrorStore()
+  const user = ref<User>();
   const userId = useCookie("userId", {
     maxAge: 60 * 60,
   });
@@ -10,24 +12,48 @@ export const useUserStore = defineStore("user", () => {
     maxAge: 60 * 60,
   });
   const apiErrors = ref();
-
+  
+  console.log("Token in useUserStore:", token);
   const setToken = (data?: string) => (token.value = data);
   const setUser = (data?: any) => (user.value = data);
-  const setUserId = (data?: string) => (userId.value = data);
+  const setUserId = (data?: any) => (userId.value = data);
   const setApiErrors = (data?: string | null) => (apiErrors.value = data);
-
-  const login = async (data: login) => {
+  
+  const signup = async (data:Signup) => {
+    console.table(data)
     try {
-      const res = await $fetch<jwt>("http://localhost:3333/auth/login", {
+      const res = await $fetch<any>("http://192.168.31.170:3333/users/create",{
+        method: 'post',
+        body: data,
+      })
+      console.log(res)
+      if (res.HttpStatus === 201) {
+        useModel.setModalValues(true,'Account Created Successfully',`your new account ${res.create.email} is ready to use `)
+      }
+    } catch (error: any) {
+      console.log(error);
+      useModel.setModalValues(
+        true,
+        error.response.statusText +" "+ error.response._data.statusCode,
+        JSON.stringify(error.response._data.message, null, 2)
+        );
+      }
+  }
+  
+  const login = async (data: login) => {
+    console.log(data)
+    try {
+      const res = await $fetch<jwt>("http://192.168.31.170:3333/auth/login", {
         method: "POST",
         body: data,
       });
-
+      
       if (res) {
         // Successful HTTP request
         setToken(res.accessToken);
-        setUserId(res.userId.toString());
-        console.log(res);
+        setUserId(res.userId);
+        console.table(res);
+        console.table({token:token.value,userId:userId.value})
         await fetchUser();
       } else {
         // HTTP request failed
@@ -36,17 +62,24 @@ export const useUserStore = defineStore("user", () => {
         setUser();
         setApiErrors("Login failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       // Other errors (e.g., network issues)
       console.log(error);
       setToken();
       setUser();
-      setApiErrors(
-        (error as Error).message.split(":")[3]?.trim() || "Unknown error"
-      );
-    }
-  };
-
+      // setApiErrors(
+        //   (error as Error).message.split(":")[3]?.trim() || "Unknown error"
+        // );
+        
+        useModel.setModalValues(
+          true,
+          error.response.statusText +" "+ error.response._data.statusCode,
+          JSON.stringify(error.response._data.message, null, 2)
+          );
+        }
+      };
+      
+      const test = ref('aaaaaaaaaaaaaaaaa')
   const logout =  () => {
     setToken();
     setUser(null);
@@ -58,7 +91,7 @@ export const useUserStore = defineStore("user", () => {
     if (token.value) {
       try {
         const res = await $fetch<User>(
-          `http://localhost:3333/users/${userId.value}`,
+          `http://192.168.31.170:3333/users/${userId.value}`,
           {
             headers: {
               Authorization: `Bearer ${token.value}`,
@@ -82,8 +115,10 @@ export const useUserStore = defineStore("user", () => {
     user,
     apiErrors,
     token,
+    test,
     setToken,
     setUser,
+    signup,
     login,
     logout,
     fetchUser,

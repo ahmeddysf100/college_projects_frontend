@@ -3,15 +3,23 @@ export interface jwt {
   userId: number;
 }
 
+
 export interface User {
   id: number;
   username: string;
   email: string;
+  role: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface login {
+  email: string;
+  password: string;
+}
+
+export interface Signup {
+  namee: string;
   email: string;
   password: string;
 }

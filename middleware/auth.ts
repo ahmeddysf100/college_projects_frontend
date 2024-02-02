@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const useSotre = useUserStore();
+  const useStore = useUserStore();
 
-  if (!useSotre.user) {
+  if (useStore.user?.role === 'user' || !useStore.user) {
     return await navigateTo("/login");
   }
 });
