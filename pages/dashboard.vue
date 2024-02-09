@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { any } from "zod";
 import type {
   AnswerExplanationItem,
   FilteredItem,
@@ -145,92 +146,49 @@ const fetchImage = async (imageUrl: any) => {
 </script>
 
 <template>
-  <div
-    class="my-4 w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500"
-  >
+  <div class="my-4 w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500">
     <InsertDelete />
     <div class="">
-      <div
-        class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700"
-      >
+      <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
         <UInput v-model="q" placeholder="Filter people..." />
       </div>
-      <UTable :columns="columns" :rows="rows">
+
+      <UTable dir="auto" :columns="columns" :rows="rows">
+
+
         <template #answers-data="{ row }">
-          <UPopover
-            v-if="row.answers.length > 0"
-            mode="hover"
-            :popper="{ placement: 'top-end', arrow: true, offsetDistance: 20 }"
-          >
+          <UPopover v-if="row.answers.length > 0" mode="hover"
+            :popper="{ placement: 'top-end', arrow: true, offsetDistance: 20 }">
             <UButton color="primary" label="show" />
 
             <template #panel>
               <div class="p-2">
-                <UTextarea
-                  autoresize
-                  :model-value="JSON.stringify(row.answers, null, 2)"
-                />
+                <UTextarea dir="auto" autoresize :model-value="JSON.stringify(row.answers, null, 2)" />
               </div>
             </template>
           </UPopover>
           <p v-else>null</p>
         </template>
+
 
         <template #Q_imageUrl-data="{ row }">
-          <UPopover
-            v-if="row.Q_imageUrl !== null"
-            :popper="{ placement: 'top', offsetDistance: 0 }"
-          >
-            <UButton
-              @click="fetchImage(row.Q_imageUrl)"
-              color="primary"
-              :label="row.Q_imageUrl"
-            />
+          <UPopover v-if="row.Q_imageUrl !== null" :popper="{ placement: 'top', offsetDistance: 0 }">
+            <UButton @click="fetchImage(row.Q_imageUrl)" color="primary" :label="row.Q_imageUrl" />
 
             <template #panel>
               <div class="p-2">
-                <img
-                  v-if="blob"
-                  :src="blob"
-                  class="max-w-60"
-                  :alt="row.Q_imageUrl"
-                />
+                <img v-if="blob" :src="blob" class="max-w-60" :alt="row.Q_imageUrl" />
 
-                <svg
-                  v-else
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="300"
-                  height="150"
-                  viewBox="0 0 300 150"
-                >
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
                   <defs>
-                    <linearGradient
-                      id="bgGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop
-                        offset="0%"
-                        style="stop-color: #3498db; stop-opacity: 1"
-                      />
-                      <stop
-                        offset="100%"
-                        style="stop-color: #2c3e50; stop-opacity: 1"
-                      />
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color: #3498db; stop-opacity: 1" />
+                      <stop offset="100%" style="stop-color: #2c3e50; stop-opacity: 1" />
                     </linearGradient>
                   </defs>
                   <rect width="100%" height="100%" fill="url(#bgGradient)" />
-                  <text
-                    x="50%"
-                    y="50%"
-                    font-family="Arial, sans-serif"
-                    font-size="24"
-                    fill="#ecf0f1"
-                    text-anchor="middle"
-                    alignment-baseline="middle"
-                  >
+                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1" text-anchor="middle"
+                    alignment-baseline="middle">
                     Not Found
                   </text>
                 </svg>
@@ -239,62 +197,26 @@ const fetchImage = async (imageUrl: any) => {
           </UPopover>
           <p v-else>null</p>
         </template>
+
 
         <template #A_imageUrl-data="{ row }">
-          <UPopover
-            v-if="row.A_imageUrl !== null"
-            :popper="{ placement: 'auto', offsetDistance: 0 }"
-          >
-            <UButton
-              @click="fetchImage(row.A_imageUrl)"
-              color="primary"
-              :label="row.A_imageUrl"
-            />
+          <UPopover v-if="row.A_imageUrl !== null" :popper="{ placement: 'auto', offsetDistance: 0 }">
+            <UButton @click="fetchImage(row.A_imageUrl)" color="primary" :label="row.A_imageUrl" />
 
             <template #panel>
               <div class="p-2">
-                <img
-                  v-if="blob"
-                  :src="blob"
-                  class="max-h-28"
-                  :alt="row.A_imageUrl"
-                />
+                <img v-if="blob" :src="blob" class="max-h-28" :alt="row.A_imageUrl" />
 
-                <svg
-                  v-else
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="300"
-                  height="150"
-                  viewBox="0 0 300 150"
-                >
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
                   <defs>
-                    <linearGradient
-                      id="bgGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop
-                        offset="0%"
-                        style="stop-color: #3498db; stop-opacity: 1"
-                      />
-                      <stop
-                        offset="100%"
-                        style="stop-color: #2c3e50; stop-opacity: 1"
-                      />
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color: #3498db; stop-opacity: 1" />
+                      <stop offset="100%" style="stop-color: #2c3e50; stop-opacity: 1" />
                     </linearGradient>
                   </defs>
                   <rect width="100%" height="100%" fill="url(#bgGradient)" />
-                  <text
-                    x="50%"
-                    y="50%"
-                    font-family="Arial, sans-serif"
-                    font-size="24"
-                    fill="#ecf0f1"
-                    text-anchor="middle"
-                    alignment-baseline="middle"
-                  >
+                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1" text-anchor="middle"
+                    alignment-baseline="middle">
                     Not Found
                   </text>
                 </svg>
@@ -303,16 +225,21 @@ const fetchImage = async (imageUrl: any) => {
           </UPopover>
           <p v-else>null</p>
         </template>
+
+
+        <template #explanationText-data="{ row }">
+          <p dir="auto">{{ row.explanationText }}</p>
+        </template>
+
+        <template #Q_text-data="{ row }">
+          <p v-if="row.Q_text" dir="auto">{{ row.Q_text }}</p>
+          <p v-else>null</p>
+        </template>
+
       </UTable>
 
-      <div
-        class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700"
-      >
-        <UPagination
-          v-model="page"
-          :page-count="pageCount"
-          :total="filteredRows.length"
-        />
+      <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
+        <UPagination v-model="page" :page-count="pageCount" :total="filteredRows.length" />
       </div>
     </div>
   </div>

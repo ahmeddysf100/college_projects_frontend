@@ -1,8 +1,8 @@
-<template>
+<template >
   <div>
-  
-  <NavBarrr />
-  <slot />
+
+    <NavBarrr />
+    <slot />
   </div>
 </template>
 

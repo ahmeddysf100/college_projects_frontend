@@ -55,57 +55,32 @@ const deletion = async () => {
     <!-- <UButton label="Open" @click="isOpen = !isOpen" /> -->
     <p class="text-"></p>
     <UModal v-model="isOpen" prevent-close>
-      <UCard
-        :ui="{
-          ring: '',
-          divide: 'divide-y divide-gray-100 dark:divide-gray-800',
-        }"
-      >
+      <UCard :ui="{
+        ring: '',
+        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+      }">
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold leading-6 text-red-600">
               {{ header }}
             </h3>
             <UButton color="red" variant="ghost" class="-my-1" @click="close">
-              <svg
-                width="20"
-                height="20"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </UButton>
           </div>
         </template>
-        <UTextarea
-          v-if="message.length > 200"
-          autoresize
-          v-model="message"
-          readonly
-          class="text-base"
-        />
+        <UTextarea v-if="message.length > 200" autoresize v-model="message" readonly class="text-base" />
         <p v-else class="text-base font-semibold text-red-400">
           {{ message }}
-          <span v-if="countNum" class="animate-spin text-white"
-            >{{ countdown }}
+          <span v-if="countNum" class="animate-spin text-white">{{ countdown }}
             {{ countdown > 1 ? "seconds" : "second" }}
           </span>
         </p>
-        <UButton
-          v-if="btnDelete"
-          label="Conferm Delete"
-          @click="deletion"
-          color="red"
-          class="mt-3"
-          block
-        />
+        <UButton v-if="btnDelete" label="Conferm Delete" @click="deletion" color="red" class="mt-3" block />
       </UCard>
     </UModal>
   </div>

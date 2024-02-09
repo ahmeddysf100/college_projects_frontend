@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
   });
   const apiErrors = ref();
   
-  console.log("Token in useUserStore:", token);
+  console.log("Token in useUserStore:", token.value);
   const setToken = (data?: string) => (token.value = data);
   const setUser = (data?: any) => (user.value = data);
   const setUserId = (data?: any) => (userId.value = data);
@@ -52,7 +52,7 @@ export const useUserStore = defineStore("user", () => {
         // Successful HTTP request
         setToken(res.accessToken);
         setUserId(res.userId);
-        console.table(res);
+        // console.table(res);
         console.table({token:token.value,userId:userId.value})
         await fetchUser();
       } else {
