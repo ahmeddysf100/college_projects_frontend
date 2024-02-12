@@ -47,8 +47,8 @@ const menuitems = [
     path: "/about",
   },
   {
-    title: "Contact",
-    path: "/contact",
+    title: "Dashboard",
+    path: "/dashboard",
   },
 ];
 

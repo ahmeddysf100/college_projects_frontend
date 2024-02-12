@@ -14,7 +14,7 @@ export const useUserStore = defineStore("user", () => {
   const apiErrors = ref();
   
   console.log("Token in useUserStore:", token.value);
-  const setToken = (data?: string) => (token.value = data);
+  const setToken = (data?: any) => (token.value = data);
   const setUser = (data?: any) => (user.value = data);
   const setUserId = (data?: any) => (userId.value = data);
   const setApiErrors = (data?: string | null) => (apiErrors.value = data);
@@ -50,8 +50,8 @@ export const useUserStore = defineStore("user", () => {
       
       if (res) {
         // Successful HTTP request
-        setToken(res.accessToken);
-        setUserId(res.userId);
+       await setToken(res.accessToken);
+       await setUserId(res.userId);
         // console.table(res);
         console.table({token:token.value,userId:userId.value})
         await fetchUser();

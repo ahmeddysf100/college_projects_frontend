@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { forEachTrailingCommentRange } from 'typescript';
 import { any } from 'zod';
 
 
@@ -28,8 +29,10 @@ const randomData = reactive({
 
 const Q = ref()
 const blob = ref([]);
+const openForm = ref(false)
+const userAnswer = ref([])
 
-const getRandom = async () => {
+const startQuiz = async () => {
   randomData.difficulty = selected.value.id
   // console.log(randomData)
   await useQuiz.getRandomQuestions(randomData)
@@ -38,16 +41,22 @@ const getRandom = async () => {
   const data: any = computed(() => useQuiz.questions)
   const rawData = await JSON.parse(data.value)
   Q.value = rawData
+
   if (rawData) {
+    openForm.value = true;
     console.log(rawData)
-    setQuiz(rawData)
-  }
-  if (rawData[0].correctAnswer) {
-    console.log('aaaaaaaaaaaaaa')
+    getRawAnswers(rawData)
   }
 
 
 
+
+
+
+
+
+
+  // gggggggggggggggggggggggggggggggget image
   const tempImageUrl = ref();
   const tempBlob = ref();
   // reset blob array in evry new req 
@@ -64,31 +73,47 @@ const getRandom = async () => {
     }
   }
 
-  console.table(blob.value)
+  // console.table(blob.value)
 }
-const arrayQuestions = ref([])
 
-const setQuiz = (data: any) => {
-  arrayQuestions.value = []
-  console.log(data.length)
-  for (let i = 0; i < data.length; i++) {
-    const question = { correctAnswer: '', answers: [], }
 
-    if (data[i].correctAnswer) {
-      question.correctAnswer = data[i].correctAnswer;
-    } else {
-      question.answers = data[i].answers;
+const rawAnswers = ref([])
+const getRawAnswers = (data: any[]) => {
+  console.log('inn rawwwwwwwwww 82')
+  data.forEach((i, index) => {
+    if (i.correctAnswer) {
+      rawAnswers.value.push(i.correctAnswer)
     }
-
-    if (data[i].Q_text) {
-
+    else if (i.answers) {
+      rawAnswers.value.push(i.answers)
     }
-
-    // console.log(question)
-    arrayQuestions.value.push(question)
-  }
-  console.table(arrayQuestions.value)
+  });
+  console.table(rawAnswers.value)
 }
+
+
+
+
+const wrongAnswers = ref([])
+const handleSubmit = async () => {
+  // console.table(userAnswer.value)
+  wrongAnswers.value = []
+  
+  userAnswer.value.forEach((user, index) => {
+    console.log({ user_answers: user, write_answers: rawAnswers.value[index] })
+
+    user === rawAnswers.value[index] ? wrongAnswers.value.push(null) :
+     wrongAnswers.value.push({ userWrongAnswer: user, index: index })
+  })
+
+  console.table(wrongAnswers.value)
+  // openForm.value = false
+  userAnswer.value = []
+  rawAnswers.value = []
+}
+
+
+
 </script>
 
 
@@ -105,16 +130,38 @@ const setQuiz = (data: any) => {
         <USelectMenu size="xl" v-model="selected" :options="selectList" />
       </UFormGroup>
 
-      <UButton @click="getRandom" class="sm:w-96 w-52 text-2xl" label="start" size="xl" block />
+      <UButton @click="startQuiz" class="sm:w-96 w-52 text-2xl" label="start" size="xl" block />
     </div>
     <div>
       <!-- <QuizQuestion/> -->
+      <form v-if="openForm">
 
-      <div v-for="(item, index) in Q" :key="item.id">
-        <div v-if="item.Q_imageUrl">
-          <img :src="blob[index]" :alt="item.Q_text">
+        <div v-for="(item, index) in Q" :key="item.id">
+          <div v-if="item.correctAnswer" class=" border-4 grid justify-center my-16 py-6">
+            <h1>{{ index }}</h1>
+            <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+
+            <UFormGroup label="Enter answer" class="mt-4" required>
+              <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
+            </UFormGroup>
+
+          </div>
+
+
+          <div v-else="item.answers" class=" border-4 grid justify-center my-16">
+
+            <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+
+          </div>
         </div>
-      </div>
+
+
+        <div>
+          <UButton class="text-xl" size="xl" @click="handleSubmit" label="Submit" block />
+        </div>
+      </form>
 
     </div>
   </div>

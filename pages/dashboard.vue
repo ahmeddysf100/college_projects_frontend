@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { any } from "zod";
+import { any, object } from "zod";
 import type {
   AnswerExplanationItem,
   FilteredItem,
@@ -20,7 +20,7 @@ const filteredData = ref<any>([]);
 const dataTable = async () => {
   await useDash.getAllQuestions();
   const rawData = useDash.dataTable; // Retrieve the array using .value
-
+  
   filteredData.value = rawData.map((item: any) => {
     const {
       id,
@@ -110,7 +110,7 @@ const filteredRows = computed(() => {
   });
 });
 
-console.log(filteredRows.value);
+// console.log(filteredRows.value);
 
 const page = ref(1);
 const pageCount = 5;

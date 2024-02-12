@@ -15,9 +15,9 @@ const items = [
 
 const isOpen = ref(false);
 const options = ref([]);
-const correct = ref("");
-let tempOptions = ref("");
-const optionMessage = ref("");
+const correct = ref('');
+let tempOptions = ref();
+const optionMessage = ref();
 const selectSubject = [
   "ashkal",
   "lost numbers",
@@ -55,7 +55,10 @@ watchEffect(() => {
 });
 
 const addOption = () => {
-  if (tempOptions.value && !options.value.includes(tempOptions.value)) {
+  console.log(tempOptions)
+  // optionMessage.value = options.value.includes(tempOptions.value) ? "This option is already exist" : null;
+  // optionMessage.value = tempOptions.value === null ? "Please enter value first" : null;
+  if (!tempOptions.value || !options.value.includes(tempOptions.value)) {
     options.value.push({
       A_Text: tempOptions.value,
       isCorrect: selectBox.value.toString(),
@@ -64,7 +67,6 @@ const addOption = () => {
     optionMessage.value = ""; // Access the value property
     selectBox.value = false;
   } else {
-    optionMessage.value = "this option is already exist"; // Access the value property
     tempOptions.value = "";
   }
   // console.log(options.value[0])
