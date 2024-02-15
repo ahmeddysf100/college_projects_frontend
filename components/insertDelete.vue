@@ -1,7 +1,7 @@
 <script setup>
 const useDashboard = useDashboardStore();
 const useModel = useMyModalErrorStore();
-
+const props = defineProps(['refreshTable'])
 const items = [
   {
     slot: "insert",
@@ -158,7 +158,7 @@ async function onSubmitinsert() {
         "Question Added Successfully",
         useDashboard.insertRes
       );
-      await prefetchComponents();
+      props.refreshTable()
     }
 
     for (var key of formData.entries()) {
@@ -230,8 +230,8 @@ async function onDeletion() {
 
           <UFormGroup v-if="insertForm.type === 'multiple options'" class="mb-4">
             <UButton size="xs" label="Add multiple chooses" class="mb-3" @click="isOpen = true" />
-            <UTextarea dir="auto" readonly color="indigo" variant="outline" :value="optionsJsonString" @input="updateOptions"
-              placeholder="multiple options..." />
+            <UTextarea dir="auto" readonly color="indigo" variant="outline" :value="optionsJsonString"
+              @input="updateOptions" placeholder="multiple options..." />
 
             <UModal v-model="isOpen" prevent-close>
               <UCard :ui="{

@@ -7,14 +7,14 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const dataTable = ref();
   const apiErrors = ref();
   const insertRes = ref();
-  const image = ref();
+  const image = ref<Blob>();
   const questionById = ref();
   const D_question = ref();
   
   const setDataTable = (data?: any) => (dataTable.value = data);
   const setApiErrors = (data?: string | null) => (apiErrors.value = data);
   const setInsertRes = (data?: any) => (insertRes.value = data);
-  const setImage = (data?: any) => (image.value = data);
+  const setImage = (data?: Blob) => (image.value = data);
   const setD_question = (data?: any) => (D_question.value = data);
   const setQuestionById = (data?: any) => (questionById.value = data);
   

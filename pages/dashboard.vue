@@ -20,7 +20,7 @@ const filteredData = ref<any>([]);
 const dataTable = async () => {
   await useDash.getAllQuestions();
   const rawData = useDash.dataTable; // Retrieve the array using .value
-  
+
   filteredData.value = rawData.map((item: any) => {
     const {
       id,
@@ -58,6 +58,11 @@ const dataTable = async () => {
   console.log(filteredData.value); // Log the filtered data
 };
 
+const refreshTable = async () => {
+  await dataTable()
+  console.log('Refreshing table...');
+}
+
 const columns = [
   {
     key: "id",
@@ -94,6 +99,7 @@ const columns = [
     label: "Answer Image?",
     sortable: true,
   },
+ 
 ];
 
 const q = ref("");
@@ -143,11 +149,13 @@ const fetchImage = async (imageUrl: any) => {
     blob.value = tempBlob.value;
   }
 };
+
+
 </script>
 
 <template>
   <div class="my-4 w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500">
-    <InsertDelete />
+    <InsertDelete :refreshTable="refreshTable" />
     <div class="">
       <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
         <UInput v-model="q" placeholder="Filter people..." />
@@ -231,11 +239,14 @@ const fetchImage = async (imageUrl: any) => {
           <p dir="auto">{{ row.explanationText }}</p>
         </template>
 
+
         <template #Q_text-data="{ row }">
           <p v-if="row.Q_text" dir="auto">{{ row.Q_text }}</p>
           <p v-else>null</p>
         </template>
 
+
+        
       </UTable>
 
       <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
