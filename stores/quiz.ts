@@ -3,8 +3,11 @@ import { defineStore } from "pinia";
 export const useMyQuizStore = defineStore("quiz", () => {
   const useModel = useMyModalErrorStore();
   const questions = ref();
-
+  const time = ref(12)
+  const startTimer= ref(false)
   const setQuitions = (data?: any) => (questions.value = data);
+  const setTime = (data?: any) => (time.value = data);
+  const setStartTimer = (data?: any) => (startTimer.value = data);
 
 
 
@@ -36,6 +39,10 @@ export const useMyQuizStore = defineStore("quiz", () => {
 
   return {
     questions,
+    time,
+    startTimer,
+    setTime,
+    setStartTimer,
     getRandomQuestions,
   };
 });

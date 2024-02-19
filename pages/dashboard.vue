@@ -99,32 +99,40 @@ const columns = [
     label: "Answer Image?",
     sortable: true,
   },
- 
-];
 
-const q = ref("");
+];
+const selectedColumns = ref(columns)
+const columnsTable = computed(() => columns.filter((column) => selectedColumns.value.includes(column)))
+
+const search = ref("");
 
 const filteredRows = computed(() => {
-  if (!q.value) {
+  if (!search.value) {
     return filteredData.value;
   }
 
   return filteredData.value.filter((person: any) => {
     return Object.values(person).some((value) => {
-      return String(value).toLowerCase().includes(q.value.toLowerCase());
+      return String(value).toLowerCase().includes(search.value.toLowerCase());
     });
   });
 });
 
+const resetSearch = () => {
+  search.value = ''
+}
+
 // console.log(filteredRows.value);
 
 const page = ref(1);
-const pageCount = 5;
+const pageCount = ref(5);
+const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
+const pageTo = computed(() => Math.min(page.value * pageCount.value, filteredRows.value.length))
 
 const rows = computed(() => {
   return filteredRows.value.slice(
-    (page.value - 1) * pageCount,
-    page.value * pageCount
+    (page.value - 1) * pageCount.value,
+    page.value * pageCount.value
   );
 });
 
@@ -150,28 +158,80 @@ const fetchImage = async (imageUrl: any) => {
   }
 };
 
-
+const windowWidth = ref();
+onMounted(() => {
+  if (process.client) {
+    windowWidth.value = window.innerWidth;
+    console.log(windowWidth);
+  } else {
+    console.log(
+      "Code is running on the server side or in a context where window is not available."
+    );
+  }
+})
 </script>
 
 <template>
-  <div class="my-4 w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500">
+  <div class=" my-4 w-[95%] sm:w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500">
     <InsertDelete :refreshTable="refreshTable" />
-    <div class="">
+
+
+    <UCard class="w-full mt-20" :ui="{
+      base: '',
+      ring: '',
+      divide: 'divide-y divide-gray-200 dark:divide-gray-700',
+      header: { padding: 'px-4 py-5' },
+      body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+      footer: { padding: 'p-4' }
+    }">
+      <template #header>
+        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+          DataBase table
+        </h2>
+      </template>
       <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
-        <UInput v-model="q" placeholder="Filter people..." />
+        <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
       </div>
 
-      <UTable dir="auto" :columns="columns" :rows="rows">
+
+      <!-- Header and Action buttons -->
+      <div class="flex justify-between items-center flex-wrap w-full px-4 py-3">
+        <div class="flex items-center gap-1.5 mb-4">
+          <span class="text-sm leading-5">Rows per page:</span>
+
+          <USelect v-model="pageCount" :options="[3, 5, 10, 20, 30, 40]" class="me-2 w-20" size="xs" />
+        </div>
+        <div class="flex gap-1.5 items-center ">
+          <USelectMenu v-model="selectedColumns" :options="columns" multiple>
+            <UButton icon="i-heroicons-view-columns" color="gray" size="xs">
+              Columns
+            </UButton>
+          </USelectMenu>
+
+          <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="search === ''" @click="resetSearch">
+            Reset
+          </UButton>
+        </div>
+      </div>
+
+
+
+      <UTable dir="auto" :columns="columnsTable" :rows="rows">
 
 
         <template #answers-data="{ row }">
-          <UPopover v-if="row.answers.length > 0" mode="hover"
+          <UPopover v-if="row.answers.length > 0" :mode="windowWidth <= 425 ? 'click' : 'hover'"
             :popper="{ placement: 'top-end', arrow: true, offsetDistance: 20 }">
             <UButton color="primary" label="show" />
 
             <template #panel>
-              <div class="p-2">
-                <UTextarea dir="auto" autoresize :model-value="JSON.stringify(row.answers, null, 2)" />
+              <div class="p-2 divide-y">
+                <p v-for="(answer, index) in row.answers" :id="answer.A_text" class=" tracking-wide break-words"
+                  :class="windowWidth <= 425 ? ' text-[10px]' : 'text-base'">
+                  {{ index + 1 }}. <span class="dark:text-slate-200 text-slate-800">{{ answer.A_text }}</span> /
+                  <span :class="answer.isCorrect === true ? 'text-green-500' : 'text-red-500'">{{ answer.isCorrect
+                  }}</span>
+                </p>
               </div>
             </template>
           </UPopover>
@@ -241,18 +301,52 @@ const fetchImage = async (imageUrl: any) => {
 
 
         <template #Q_text-data="{ row }">
-          <p v-if="row.Q_text" dir="auto">{{ row.Q_text }}</p>
+          <UPopover v-if="row.Q_text" :mode="windowWidth <= 425 ? 'click' : 'hover'"
+            :popper="{ placement: 'top-end', arrow: true, offsetDistance: 0 }">
+            <UButton dir="auto" color="primary" label="show" />
+            <template #panel>
+              <div class="p-2">
+                <UTextarea v-if="windowWidth <= 425" textarea-class="dark:text-slate-200 text-slate-800"
+                  :ui="{ base: row.Q_text.length > 50 ? 'w-[200px]' : '' }" dir="auto" size="xl" :rows="1" padded
+                  autoresize variant="none" :model-value="row.Q_text" />
+                <UTextarea v-else textarea-class="dark:text-slate-200 text-slate-800"
+                  :ui="{ base: row.Q_text.length > 50 ? 'w-[400px]' : '' }" dir="auto" size="xl" :rows="1" padded
+                  autoresize variant="none" :model-value="row.Q_text" />
+              </div>
+            </template>
+          </UPopover>
           <p v-else>null</p>
         </template>
-
-
-        
       </UTable>
 
-      <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
-        <UPagination v-model="page" :page-count="pageCount" :total="filteredRows.length" />
-      </div>
-    </div>
+
+      <!-- Number of rows & Pagination -->
+      <template #footer>
+        <div class="flex flex-wrap justify-between items-center">
+          <div>
+            <span class="text-sm leading-5">
+              Showing
+              <span class="font-medium">{{ pageFrom }}</span>
+              to
+              <span class="font-medium">{{ pageTo }}</span>
+              of
+              <span class="font-medium">{{ filteredRows.length }}</span>
+              results
+            </span>
+          </div>
+
+          <UPagination v-model="page" :page-count="pageCount" :total="filteredRows.length" :ui="{
+            wrapper: 'flex items-center gap-1',
+            rounded: '!rounded-full min-w-[32px] justify-center',
+            default: {
+              activeButton: {
+                variant: 'outline'
+              }
+            }
+          }" />
+        </div>
+      </template>
+    </UCard>
   </div>
 </template>
 
