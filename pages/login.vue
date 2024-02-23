@@ -145,37 +145,18 @@ const toLogin = () => {
               <h2 class="text-xl font-bold text-center">Login Form</h2>
             </template>
 
-            <UForm
-              :schema="schemaLogin"
-              :state="formstate"
-              @submit="handleFormSubmit"
-            >
+            <UForm :schema="schemaLogin" :state="formstate" @submit="handleFormSubmit">
               <UFormGroup label="Email" name="email">
-                <UInput
-                  type="email"
-                  v-model="formstate.email"
-                  placeholder="jabarmangole@gmail.com"
-                ></UInput>
+                <UInput type="email" v-model="formstate.email" placeholder="jabarmangole@gmail.com"></UInput>
               </UFormGroup>
 
               <UFormGroup label="Password" class="mt-4" name="password">
-                <UInput
-                  type="password"
-                  v-model="formstate.password"
-                  placeholder="3abee meno wa fee"
-                ></UInput>
+                <UInput type="password" v-model="formstate.password" placeholder="3abee meno wa fee"></UInput>
               </UFormGroup>
-              <UButton type="submit" class="mt-4 text-base" block
-                >Login</UButton
-              >
+
+              <UButton type="submit" class="mt-4 text-base" block>Login</UButton>
             </UForm>
-            <UButton
-              class="pt-3"
-              @click="toSignup"
-              label="Create Account ?"
-              color="emerald"
-              variant="link"
-            />
+            <UButton class="pt-3" @click="toSignup" label="Create Account ?" color="emerald" variant="link" />
           </UCard>
         </template>
 
@@ -185,58 +166,27 @@ const toLogin = () => {
               <h2 class="text-xl font-bold text-center">Signup Form</h2>
             </template>
 
-            <UForm
-              :schema="schemaSignup"
-              :state="signUpFrom"
-              @submit="handleFormSubmit_signup"
-            >
+            <UForm :schema="schemaSignup" :state="signUpFrom" @submit="handleFormSubmit_signup">
               <UFormGroup label="Name" name="namee">
-                <UInput
-                  type="text"
-                  v-model="signUpFrom.namee"
-                  placeholder="jabar"
-                ></UInput>
+                <UInput type="text" v-model="signUpFrom.namee" placeholder="jabar"></UInput>
               </UFormGroup>
 
               <UFormGroup label="Email" class="mt-4" name="email">
-                <UInput
-                  type="email"
-                  v-model="signUpFrom.email"
-                  placeholder="jabarmangole@gmail.com"
-                ></UInput>
+                <UInput type="email" v-model="signUpFrom.email" placeholder="jabarmangole@gmail.com"></UInput>
               </UFormGroup>
 
               <UFormGroup label="Password" class="mt-4" name="password">
-                <UInput
-                  type="password"
-                  v-model="signUpFrom.password"
-                  placeholder="3abee meno wa fee"
-                ></UInput>
+                <UInput type="password" v-model="signUpFrom.password" placeholder="3abee meno wa fee"></UInput>
               </UFormGroup>
 
-              <UFormGroup
-                label="Confirm Password"
-                class="mt-4"
-                name="confirmPassword"
-              >
-                <UInput
-                  type="password"
-                  v-model="signUpFrom.confirmPassword"
-                  placeholder="3abee meno wa fee"
-                ></UInput>
+              <UFormGroup label="Confirm Password" class="mt-4" name="confirmPassword">
+                <UInput type="password" v-model="signUpFrom.confirmPassword" placeholder="3abee meno wa fee"></UInput>
               </UFormGroup>
 
-              <UButton type="submit" class="mt-4 text-base" block
-                >Login</UButton
-              >
+              <p class=" text-center text-red-600 font-semibold">{{ useStore.apiErrors }}</p>
+              <UButton type="submit" class="mt-4 text-base" block>Login</UButton>
             </UForm>
-            <UButton
-              class="pt-3"
-              @click="toLogin"
-              label="I Have Account !"
-              color="emerald"
-              variant="link"
-            />
+            <UButton class="pt-3" @click="toLogin" label="I Have Account !" color="emerald" variant="link" />
           </UCard>
         </template>
       </UTabs>

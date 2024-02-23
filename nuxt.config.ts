@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: true,
+ssr: true,
   devtools: {
     enabled: true,
 
@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ["@nuxt/ui", "@pinia/nuxt"],
+  modules: ["@nuxt/ui", "@pinia/nuxt",'@vueuse/motion/nuxt'],
   imports: {
     dirs: ["./stores"],
   },

@@ -44,7 +44,7 @@ const clicked = (e: any) => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[80%] text-pretty mt-20">
+  <div class="mx-auto w-[95%] sm:w-[80%] text-pretty mt-20">
     <UCard class="">
       <UDivider label="Choose Quiz"
         :ui="{ border: { base: 'border_gradient_gray', size: { horizontal: 'border-t-4' } }, label: 'sm:text-3xl text-xl  text-primary-500 dark:text-primary-400 ' }" />

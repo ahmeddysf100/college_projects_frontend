@@ -3,13 +3,14 @@ import { defineStore } from "pinia";
 export const useMyQuizStore = defineStore("quiz", () => {
   const useModel = useMyModalErrorStore();
   const questions = ref();
-  const time = ref(12)
-  const startTimer= ref(false)
+  const time = ref(15000);
+  const startTimer = ref(false);
+  const showTimer = ref(false);
+  const startSubmit = ref(false)
   const setQuitions = (data?: any) => (questions.value = data);
   const setTime = (data?: any) => (time.value = data);
   const setStartTimer = (data?: any) => (startTimer.value = data);
-
-
+  const setShowTimer = (data?: any) => (showTimer.value = data);
 
   const getRandomQuestions = async (data: any) => {
     // console.table(data);
@@ -25,8 +26,8 @@ export const useMyQuizStore = defineStore("quiz", () => {
       //     `your new account ${res} is ready to use `
       //   );
       // }
-     await setQuitions(res);
-    //  console.log(questions.value)
+      await setQuitions(res);
+      //  console.log(questions.value)
     } catch (error: any) {
       console.log(error);
       useModel.setModalValues(
@@ -41,6 +42,8 @@ export const useMyQuizStore = defineStore("quiz", () => {
     questions,
     time,
     startTimer,
+    showTimer,
+    startSubmit,
     setTime,
     setStartTimer,
     getRandomQuestions,

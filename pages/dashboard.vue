@@ -172,7 +172,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class=" my-4 w-[95%] sm:w-3/4 mx-auto outline outline-offset-4 rounded-md outline-sky-500">
+  <div class=" my-4 w-[95%] sm:w-[80%] mx-auto outline outline-offset-4 rounded-md outline-sky-500">
     <InsertDelete :refreshTable="refreshTable" />
 
 

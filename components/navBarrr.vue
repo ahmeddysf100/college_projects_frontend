@@ -12,6 +12,7 @@ const isDark = computed({
 });
 
 const useStore = useUserStore();
+const useQuiz = useMyQuizStore();
 
 const items = [
   [
@@ -54,7 +55,7 @@ const menuitems = [
 
 const open = ref(false);
 const windowWidth = ref();
-onMounted(()=>{
+onMounted(() => {
   if (process.client) {
     windowWidth.value = window.innerWidth;
     console.log(windowWidth);
@@ -64,6 +65,8 @@ onMounted(()=>{
     );
   }
 })
+
+const showTimer = computed(() => useQuiz.showTimer)
 </script>
 
 <template>
@@ -152,7 +155,7 @@ onMounted(()=>{
         </li>
       </ul>
     </nav>
-    <QuizQuestion/>
+    <QuizQuestion v-if="showTimer === true" />
   </div>
 </template>
 
