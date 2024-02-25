@@ -115,8 +115,8 @@ const getRawAnswers = (data: any[]) => {
 }
 
 
-
-const wrongAnswers = ref([])
+const wrongAnswers = ref<any>([])
+const trueCount = ref(0)
 const falseCount = ref(0)
 const emptyQuestion = ref()
 const handleSubmit = async () => {
@@ -124,6 +124,7 @@ const handleSubmit = async () => {
   useQuiz.showTimer = false
   userAnswer.value = userAnswer.value.map(user => user.trim().toLowerCase());
   wrongAnswers.value = []
+  trueCount.value = 0
   falseCount.value = 0
   emptyQuestion.value = 0
   if (userAnswer.value.length > 0) {
@@ -133,8 +134,8 @@ const handleSubmit = async () => {
       console.log({ user_answers: user, write_answers: rawAnswers1.value[index] })
       // trim start and end spaces of userAnswers
       if (user === rawAnswers1.value[index]) {
-        wrongAnswers.value.push(null)
-
+        wrongAnswers.value.push()
+        trueCount.value++
       } else if (user === null) {
         falseCount.value++
         emptyQuestion.value++
@@ -146,6 +147,7 @@ const handleSubmit = async () => {
 
 
     })
+    emptyQuestion.value = rawAnswers1.value.length - (falseCount.value + trueCount.value)
   } else {
     emptyQuestion.value = rawAnswers1.value.length
     falseCount.value = rawAnswers1.value.length
@@ -161,7 +163,7 @@ const handleSubmit = async () => {
 
 
 
-
+//if time out and the still did not submit => system submit auto
 const startSubmit = computed(() => useQuiz.startSubmit)
 // const shouldAnswer = ref(true)
 watch(startSubmit, (newValue, oldValue) => {
@@ -247,8 +249,8 @@ const isSelected = (index: any, index2: any, item: any) => {
                 :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'my-4',
                   isSelected(index, index2, item) ? 'outline outline-offset-2 outline-green-500 bg-green-400' : 'outline outline-offset-2 outline-stone-400']">
                 <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
-                  v-model="userAnswer[index]" class="w-8 h-8 custom-radio" required />
-                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center">{{ i.A_text }}</label>
+                  v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
+                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer">{{ i.A_text }}</label>
               </div>
 
 
@@ -265,7 +267,7 @@ const isSelected = (index: any, index2: any, item: any) => {
         <h1
           class="text-2xl font-bold bg-gradient-to-r from-orange-700 via-blue-500 to-green-400 text-transparent bg-clip-text  animate-gradient">
           {{ resultMessage }}</h1>
-        <p class=" text-xl font-semibold">your score {{ rawAnswers1.length - falseCount }}/{{ rawAnswers1.length }}</p>
+        <p class=" text-xl font-semibold">your score {{ trueCount }}/{{ rawAnswers1.length }}</p>
         <p v-if="emptyQuestion">questions did not answer: {{ emptyQuestion }}</p>
       </div>
     </div>
