@@ -69,6 +69,7 @@ const clicked = (e: any) => {
 
     <UCard class="mx-auto mt-10">
       <QuizRandom v-if="quiz.random" />
+      <QuizRapid v-if="quiz.rapid" />
       <!-- <p>aaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa
         aaaaaaaaa aaaaaaaaaaa aaaaaaaaaaaaaaa aaaaaaaaaa aaaaaaaaaaaa aaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         aaaaaaaaaaa</p> -->
