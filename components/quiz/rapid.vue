@@ -20,7 +20,7 @@ const selectList = [
   },
 ]
 const selected = ref(selectList[0])
-const randomData = reactive({
+const rapidData = reactive({
   count: '20',
   difficulty: '',
 })
@@ -31,13 +31,20 @@ const openForm = ref(false)
 const userAnswer = ref<any[]>([])
 const rawData = ref()
 const showStart = ref(true)
+const btnType = ref('button')
 
 const startQuiz = async () => {
-  randomData.difficulty = selected.value.id
-  // console.log(randomData)
-  await useQuiz.getRandomQuestions(randomData)
+  rapidData.difficulty = selected.value.id
+  if (selected.value.id === '1') {
+    useQuiz.setTime(10)
+  } else if (selected.value.id === '2') {
+    useQuiz.setTime(30)
+  } else if (selected.value.id === '3') {
+    useQuiz.setTime(15)
+  }
 
-
+  // console.log(rapidData)
+  await useQuiz.getRandomQuestions(rapidData)
   const data: any = computed(() => useQuiz.questions)
   rawData.value = await JSON.parse(data.value)
 
@@ -47,9 +54,13 @@ const startQuiz = async () => {
     console.log(rawData.value)
     getRawAnswers(rawData.value)
     //show timer when data receved
+    useQuiz.timerPosition = 'quiz'
+
     useQuiz.showTimer = true;
     //start timer after some time waiting for question componont to mount
     useQuiz.startTimer = true;
+
+    btnType.value = 'Next'
   }
 
   // gggggggggggggggggggggggggggggggget image
@@ -71,6 +82,21 @@ const startQuiz = async () => {
 
   showStart.value = false
 }
+
+
+const showTimer = computed(() => useQuiz.showTimer)
+const questionOrder = ref(0)
+const nextQuestion = () => {
+  useQuiz.showTimer = false
+  if (questionOrder.value !== (rawData.value.length - 1)) {
+
+    questionOrder.value++
+
+  } else {
+    handleSubmit()
+  }
+}
+
 
 
 const rawAnswers1 = ref<any[]>([])
@@ -114,8 +140,6 @@ const trueCount = ref(0)
 const falseCount = ref(0)
 const emptyQuestion = ref()
 const handleSubmit = async () => {
-  // if user submit timer component unmount or time out wil unmount (see question component)
-  useQuiz.showTimer = false
   showStart.value = true
   userAnswer.value = userAnswer.value.map(user => user.trim().toLowerCase());
   wrongAnswers.value = []
@@ -164,7 +188,8 @@ const startSubmit = computed(() => useQuiz.startSubmit)
 watch(startSubmit, (newValue, oldValue) => {
   console.log('submitttttttt', newValue)
   if (newValue === true) {
-    handleSubmit()
+    nextQuestion()
+    // useQuiz.startSubmit = false
   }
 })
 
@@ -198,7 +223,7 @@ onUnmounted(() => {
 </script>
 
 
-<template >
+<template>
   <div>
     <div v-if="showStart">
 
@@ -220,51 +245,55 @@ onUnmounted(() => {
     </div>
 
 
-    <!-- <QuizQuestion/> -->
     <div v-if="openForm">
       <UForm @submit="handleSubmit">
-        <div v-for="(item, index) in rawData" :key="item.id" v-motion
-          :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
-          :visible-once="{ opacity: 1, x: 0, transition: { duration: 250 } }">
+        <div v-for="(item, index) in rawData" :key="item.id" v-motion>
+          <div v-if="index === questionOrder" :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
+            :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
+            <QuizQuestion />
 
 
+            <div v-if="item.correctAnswer" class=" border-4 grid justify-center mb-4">
+              <h1>{{ index }}</h1>
+              <img v-if="item.Q_imageUrl" class="" :src="blob[index]"
+                :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
-          <div v-if="item.correctAnswer" class=" border-4 grid justify-center my-16 py-6">
-            <h1>{{ index }}</h1>
-            <img v-if="item.Q_imageUrl" class="" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+              <UFormGroup label="Enter answer" class="mt-4" required>
+                <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
+              </UFormGroup>
 
-            <UFormGroup label="Enter answer" class="mt-4" required>
-              <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
-            </UFormGroup>
-
-          </div>
-
-
-          <div v-else="item.answers" class=" border-4 grid justify-center my-16 py-6">
-            <h1>{{ index }}</h1>
-            <img v-if="item.Q_imageUrl" class="" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
-
-            <div v-for="(i, index2) in item.answers" :key="i.id"
-              :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'my-4',
-                isSelected(index, index2, item) ? 'outline outline-offset-2 outline-green-500 bg-green-400' : 'outline outline-offset-2 outline-stone-400']">
-              <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
-                v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
-              <label :for="`Q${index} option${index2}`" class="self-center break-all w-full py-2 text-center cursor-pointer">{{
-                i.A_text }}</label>
             </div>
 
 
+            <div v-else="item.answers" class=" border-4 grid justify-center my-16 py-6">
+              <h1>{{ index }}</h1>
+              <img v-if="item.Q_imageUrl" class="" :src="blob[index]"
+                :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+
+              <div v-for="(i, index2) in item.answers" :key="i.id"
+                :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
+                  isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
+                <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
+                  v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" />
+                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer "
+                  :class="isSelected(index, index2, item) ? 'text-black' : ''">{{
+                    i.A_text }}</label>
+              </div>
+            </div>
+
           </div>
         </div>
 
 
+
         <div>
-          <UButton class="text-xl" size="xl" type="submit" label="Submit" block />
+          <UButton class="text-xl" @click="nextQuestion" :label="btnType" size="xl" block />
         </div>
       </UForm>
     </div>
+
     <div v-if="openResult" class=" grid justify-center my-20">
       <h1
         class="text-2xl font-bold bg-gradient-to-r from-orange-700 via-blue-500 to-green-400 text-transparent bg-clip-text  animate-gradient">
@@ -297,31 +326,14 @@ onUnmounted(() => {
   display: none;
 }
 
-/* Style the radio button when it's checked */
-.custom-radio:checked {
-  background-color: #108e3000;
-  /* Change background color when checked */
-}
 
 
-.animate-gradient {
-  background-size: 300%;
-  -webkit-animation: animatedgradient 6s ease infinite alternate;
-  -moz-animation: animatedgradient 6s ease infinite alternate;
-  animation: animatedgradient 6s ease infinite alternate;
-}
-
-@keyframes animatedgradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+.border_gradient_gray {
+  border-image: #00c9ff;
+  /* fallback for old browsers */
+  border-image: -webkit-linear-gradient(to left, #00c9ff, #92fe9d) 1;
+  /* Chrome 10-25, Safari 5.1-6 */
+  border-image: linear-gradient(to left, #92FE9D, #00C9FF) 1;
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>

@@ -33,6 +33,13 @@ const rawData = ref()
 
 const startQuiz = async () => {
   randomData.difficulty = selected.value.id
+  if (selected.value.id === '1') {
+    useQuiz.setTime(9000)
+  } else if (selected.value.id === '2') {
+    useQuiz.setTime(600)
+  } else if (selected.value.id === '3') {
+    useQuiz.setTime(300)
+  }
   // console.log(randomData)
   await useQuiz.getRandomQuestions(randomData)
 
@@ -218,8 +225,6 @@ onUnmounted(() => {
 
       <UButton @click="startQuiz" class="sm:w-96 w-52 text-2xl" label="start" size="xl" block :loading="rawData" />
     </div>
-    <div>
-
 
 
       <!-- <QuizQuestion/> -->
@@ -249,11 +254,13 @@ onUnmounted(() => {
               <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
               <div v-for="(i, index2) in item.answers" :key="i.id"
-                :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'my-4',
-                  isSelected(index, index2, item) ? 'outline outline-offset-2 outline-green-500 bg-green-400' : 'outline outline-offset-2 outline-stone-400']">
+                :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
+                  isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
                 <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
                   v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
-                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer">{{ i.A_text }}</label>
+                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer "
+                  :class="isSelected(index, index2, item) ? 'text-black' : ''">{{
+                    i.A_text }}</label>
               </div>
 
 
@@ -274,7 +281,6 @@ onUnmounted(() => {
         <p v-if="emptyQuestion">questions did not answer: {{ emptyQuestion }}</p>
       </div>
     </div>
-  </div>
 </template>
 
 
@@ -299,31 +305,14 @@ onUnmounted(() => {
   display: none;
 }
 
-/* Style the radio button when it's checked */
-.custom-radio:checked {
-  background-color: #108e3000;
-  /* Change background color when checked */
-}
 
 
-.animate-gradient {
-  background-size: 300%;
-  -webkit-animation: animatedgradient 6s ease infinite alternate;
-  -moz-animation: animatedgradient 6s ease infinite alternate;
-  animation: animatedgradient 6s ease infinite alternate;
-}
-
-@keyframes animatedgradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+.border_gradient_gray {
+  border-image: #00c9ff;
+  /* fallback for old browsers */
+  border-image: -webkit-linear-gradient(to left, #00c9ff, #92fe9d) 1;
+  /* Chrome 10-25, Safari 5.1-6 */
+  border-image: linear-gradient(to left, #92FE9D, #00C9FF) 1;
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>

@@ -5,10 +5,10 @@ export const useUserStore = defineStore("user", () => {
   const useModel = useMyModalErrorStore();
   const user = ref<User>();
   const userId = useCookie("userId", {
-    maxAge: 60 * 60,
+    maxAge: 86400, //1d
   });
   const token = useCookie("jwt", {
-    maxAge: 60 * 60,
+    maxAge: 86400,
   });
   const apiErrors = ref();
 

@@ -66,7 +66,7 @@ onMounted(() => {
   }
 })
 
-const showTimer = computed(() => useQuiz.showTimer)
+const showTimer = computed(() => useQuiz.timerPosition === 'nav' ? useQuiz.showTimer : false)
 </script>
 
 <template>

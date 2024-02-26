@@ -9,6 +9,7 @@ const temp = ref(useQuiz.time);
 const min = ref()
 const max = temp.value;
 const sec = ref()
+
 const color = computed(() => {
   switch (true) {
     case temp.value < max * 0.85: return 'green'
@@ -21,64 +22,39 @@ const color = computed(() => {
   }
 })
 
-// function shadesOfGreenToRed(steps: any) {
-//   const colors = [];
-//   const stepSize = 255 / (steps - 1); // Calculate the step size for red
-
-//   for (let i = 0; i < steps; i++) {
-//     const redValue = Math.round(i * stepSize); // Increase the red value
-//     const greenValue = 255 - redValue; // Decrease the green value
-
-//     const hexColor = `#${toHex(redValue)}${toHex(greenValue)}00`; // Construct the hexadecimal color
-//     colors.push(hexColor);
-//   }
-
-//   return colors;
-// }
-
-// function toHex(value: any) {
-//   const hex = value.toString(16); // Convert the value to hexadecimal
-//   return hex.length === 1 ? '0' + hex : hex; // Add leading zero if necessary
-// }
-
-// // Example usage:
-// const shades = shadesOfGreenToRed(temp.value);
-// console.log(shades);
-
-// const color = computed(() => {
-//   if (temp.value < 10) return 'blue';
-//   else if (temp.value < 20) return 'amber';
-//   else if (temp.value < 30) return 'orange';
-//   else return '#aa5500';
-// });
 
 onMounted(() => {
   countdawn.value = setInterval(() => {
-
+    
     var minutes = Math.floor(temp.value / 60);
     var seconds = Math.floor(temp.value % 60);
-
+    
     min.value = minutes < 10 ? `0${minutes}` : minutes
     sec.value = seconds < 10 ? `0${seconds}` : seconds
-
+    
     // If the count down is finished stop 
     if (temp.value < 0) {
       clearInterval(countdawn.value);
+      useQuiz.startSubmit = true
+      useQuiz.showTimer = false
     }
     temp.value--;
   }, 1000)
+  
+})
 
+onUnmounted(()=>{
+  clearInterval(countdawn.value);
 })
 
 
-
-watch(temp, (newValue, oldValue) => {
-  console.log('aaaaa', newValue)
-  if (temp.value < 0) {
-    useQuiz.startSubmit = true
-    useQuiz.showTimer = false
-  }
-})
+// watch(temp, (newValue, oldValue) => {
+//   console.log('aaaaa', newValue)
+//   if (temp.value < 0) {
+//     useQuiz.startSubmit = true
+//     useQuiz.showTimer = false
+//   }
+// })
 
 </script>
 

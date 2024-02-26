@@ -3,10 +3,12 @@ import { defineStore } from "pinia";
 export const useMyQuizStore = defineStore("quiz", () => {
   const useModel = useMyModalErrorStore();
   const questions = ref();
-  const time = ref(6000);
+  const time = ref();
   const startTimer = ref(false);
   const showTimer = ref(false);
+  const timerPosition = ref('nav')
   const startSubmit = ref(false)
+
   const setQuitions = (data?: any) => (questions.value = data);
   const setTime = (data?: any) => (time.value = data);
   const setStartTimer = (data?: any) => (startTimer.value = data);
@@ -16,7 +18,7 @@ export const useMyQuizStore = defineStore("quiz", () => {
     // console.table(data);
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/quiz/${data.count}/${data.difficulty}`
+        `http://192.168.31.170:3333/quiz/${data.count}/${data.difficulty}/random`
       );
       // console.log(res);
       // if (res.HttpStatus === 201) {
@@ -44,6 +46,7 @@ export const useMyQuizStore = defineStore("quiz", () => {
     startTimer,
     showTimer,
     startSubmit,
+    timerPosition,
     setTime,
     setStartTimer,
     getRandomQuestions,
