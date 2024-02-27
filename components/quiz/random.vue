@@ -56,6 +56,7 @@ const startQuiz = async () => {
     useQuiz.showTimer = true;
     //start timer after some time waiting for question componont to mount
     useQuiz.startTimer = true;
+    useQuiz.timerPosition = 'nav'
   }
 
 
@@ -227,60 +228,60 @@ onUnmounted(() => {
     </div>
 
 
-      <!-- <QuizQuestion/> -->
-      <div v-if="openForm">
-        <UForm @submit="handleSubmit">
-          <div v-for="(item, index) in rawData" :key="item.id" v-motion
-            :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
-            :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
+    <!-- <QuizQuestion/> -->
+    <div v-if="openForm">
+      <UForm @submit="handleSubmit">
+        <div v-for="(item, index) in rawData" :key="item.id" v-motion
+          :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
+          :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
 
 
 
-            <div v-if="item.correctAnswer" class=" border-4 grid justify-center my-16 py-6">
-              <h1>{{ index }}</h1>
-              <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+          <div v-if="item.correctAnswer" class=" border-4 grid justify-center my-16 py-6">
+            <h1>{{ index }}</h1>
+            <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
-              <UFormGroup label="Enter answer" class="mt-4" required>
-                <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
-              </UFormGroup>
+            <UFormGroup label="Enter answer" class="mt-4" required>
+              <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
+            </UFormGroup>
 
-            </div>
-
-
-            <div v-else="item.answers" class=" border-4 grid justify-center my-16 p-6">
-              <h1>{{ index }}</h1>
-              <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
-
-              <div v-for="(i, index2) in item.answers" :key="i.id"
-                :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
-                  isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
-                <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
-                  v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
-                <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer "
-                  :class="isSelected(index, index2, item) ? 'text-black' : ''">{{
-                    i.A_text }}</label>
-              </div>
-
-
-            </div>
           </div>
 
 
-          <div>
-            <UButton class="text-xl" size="xl" type="submit" label="Submit" block />
+          <div v-else="item.answers" class=" border-4 grid justify-center my-16 p-6">
+            <h1>{{ index }}</h1>
+            <img v-if="item.Q_imageUrl" :src="blob[index]" :alt="`img ${item.Q_imageUrl} index in array ${index}`">
+            <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+
+            <div v-for="(i, index2) in item.answers" :key="i.id"
+              :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
+                isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
+              <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
+                v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
+              <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer "
+                :class="isSelected(index, index2, item) ? 'text-black' : ''">{{
+                  i.A_text }}</label>
+            </div>
+
+
           </div>
-        </UForm>
-      </div>
-      <div v-if="openResult" class=" grid justify-center my-20">
-        <h1
-          class="text-2xl font-bold bg-gradient-to-r from-orange-700 via-blue-500 to-green-400 text-transparent bg-clip-text  animate-gradient">
-          {{ resultMessage }}</h1>
-        <p class=" text-xl font-semibold">your score {{ trueCount }}/{{ rawAnswers1.length }}</p>
-        <p v-if="emptyQuestion">questions did not answer: {{ emptyQuestion }}</p>
-      </div>
+        </div>
+
+
+        <div>
+          <UButton class="text-xl" size="xl" type="submit" label="Submit" block />
+        </div>
+      </UForm>
     </div>
+    <div v-if="openResult" class=" grid justify-center my-20">
+      <h1
+        class="text-2xl font-bold bg-gradient-to-r from-orange-700 via-blue-500 to-green-400 text-transparent bg-clip-text  animate-gradient">
+        {{ resultMessage }}</h1>
+      <p class=" text-xl font-semibold">your score {{ trueCount }}/{{ rawAnswers1.length }}</p>
+      <p v-if="emptyQuestion">questions did not answer: {{ emptyQuestion }}</p>
+    </div>
+  </div>
 </template>
 
 

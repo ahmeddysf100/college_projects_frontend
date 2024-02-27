@@ -59,7 +59,6 @@ const startQuiz = async () => {
     useQuiz.showTimer = true;
     //start timer after some time waiting for question componont to mount
     useQuiz.startTimer = true;
-
     btnType.value = 'Next'
   }
 
@@ -93,6 +92,7 @@ const nextQuestion = () => {
     questionOrder.value++
 
   } else {
+    questionOrder.value = 0
     handleSubmit()
   }
 }
@@ -247,8 +247,8 @@ onUnmounted(() => {
 
     <div v-if="openForm">
       <UForm @submit="handleSubmit">
-        <div v-for="(item, index) in rawData" :key="item.id" v-motion>
-          <div v-if="index === questionOrder" :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
+        <div v-for="(item, index) in rawData" :key="item.id">
+          <div v-if="index === questionOrder" v-motion :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
             :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
             <QuizQuestion />
 

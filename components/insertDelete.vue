@@ -16,7 +16,7 @@ const items = [
 const isOpen = ref(false);
 const options = ref([]);
 const correct = ref('');
-let tempOptions = ref();
+let tempOptions = ref('');
 const optionMessage = ref();
 const selectSubject = [
   "ashkal",
@@ -55,23 +55,31 @@ watchEffect(() => {
 });
 
 const addOption = () => {
-  console.log(tempOptions)
-  // optionMessage.value = options.value.includes(tempOptions.value) ? "This option is already exist" : null;
-  // optionMessage.value = tempOptions.value === null ? "Please enter value first" : null;
-  if (!tempOptions.value || !options.value.includes(tempOptions.value)) {
+  tempOptions.value = tempOptions.value.trim();
+
+  // Check if the trimmed tempOptions.value is empty
+  optionMessage.value = tempOptions.value === '' ? "Please enter value first" : null;
+
+  // Check if the trimmed tempOptions.value already exists in options.value
+  if (tempOptions.value && !options.value.some(option => option.A_Text === tempOptions.value)) {
     options.value.push({
       A_Text: tempOptions.value,
       isCorrect: selectBox.value.toString(),
-    }); // Access the value property
-    tempOptions.value = ""; // Update the value property
-    optionMessage.value = ""; // Access the value property
+    });
+    
+    // Clear the entered option and reset selectBox value
+    tempOptions.value = '';
+    optionMessage.value = "";
     selectBox.value = false;
+  } else if (tempOptions.value) {
+    // If tempOptions.value is not empty but it already exists, set optionMessage.value accordingly
+    optionMessage.value = "This option already exists";
   } else {
-    tempOptions.value = "";
+    // Clear the entered option if it's empty
+    tempOptions.value = '';
   }
-  // console.log(options.value[0])
-  // console.log(insertForm)
 };
+
 
 function removeOption(option) {
   options.value = options.value.filter((item) => {
@@ -272,10 +280,10 @@ async function onDeletion() {
                 </UFormGroup>
 
                 <div class="flex flex-wrap gap-1">
-                  <div v-for="option in options" :key="option">
+                  <div v-for="(option, index) in options" :key="option">
                     <p class="break-all rounded bg-slate-600 mt-1 ml-1 px-1 cursor-pointer text-xl hover:bg-rose-700"
                       @click="removeOption(option)">
-                      {{ option }}
+                      {{ index + 1 }}. {{ option }}
                     </p>
                   </div>
                 </div>
