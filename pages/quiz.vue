@@ -75,6 +75,7 @@ const clicked = (e: any) => {
         aaaaaaaaaaa</p> -->
     </UCard>
   </div>
+  <board/>
 </template>
 
 <style>

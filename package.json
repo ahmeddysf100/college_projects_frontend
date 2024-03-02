@@ -23,6 +23,8 @@
     "@pinia/nuxt": "0.5.1",
     "@vueuse/motion": "^2.1.0",
     "pinia": "2.1.7",
+    "vite": "^5.1.4",
+    "vite-plugin-inspect": "^0.8.3",
     "zod": "3.22.4"
   }
 }
