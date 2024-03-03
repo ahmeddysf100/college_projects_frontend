@@ -1,6 +1,4 @@
-
 <script lang="ts" setup>
-import { any, object } from "zod";
 import type {
   AnswerExplanationItem,
   FilteredItem,
@@ -8,10 +6,12 @@ import type {
   answersItem,
 } from "~/types";
 
-definePageMeta({
-  middleware: ["auth"],
-  layout: "default",
-});
+
+
+const props = defineProps(['showInsert'])
+const showInsert = props.showInsert
+
+
 const useDash = useDashboardStore();
 onMounted(() => {
   dataTable();
@@ -159,6 +159,40 @@ const fetchImage = async (imageUrl: any) => {
   }
 };
 
+function select(row: any) {
+  const index = selected.value.findIndex((item: any) => item.id === row.id);
+  if (index === -1) {
+    selected.value.push(row);
+    useDash.addSelectedQuestion(row);
+  } else {
+    selected.value.splice(index, 1);
+    useDash.removeSelectedQuestion(index);
+  }
+  // console.log(selected.value)
+}
+
+
+const selected = ref<any[]>([]);
+
+// const selectedQuestions = computed(() => useDash.selectedQuestions);
+
+// // Watch for changes in the selected array
+// watch(selected, (newSelected, oldSelected) => {
+
+//   const added = newSelected.filter(item => !oldSelected.includes(item));
+//   const removed = oldSelected.filter(item => !newSelected.includes(item));
+//   console.log({ newSelected: newSelected, added: added, oldSelected: oldSelected, removed: removed })
+//   // Update setSelectedQuestion with added elements
+//   useDash.addSelectedQuestion(added);
+//   useDash.removeSelectedQuestion(removed);
+// });
+
+
+const showRightChoose = (row: any[]) => {
+  const correctAnswers = row.filter((r: any) => r.isCorrect === true).map((r: any) => `${r.A_text} is correct show more...`);
+  return correctAnswers.join(','); // Join correct answers into a single string
+}
+
 const windowWidth = ref();
 onMounted(() => {
   if (process.client) {
@@ -174,7 +208,8 @@ onMounted(() => {
 
 <template>
   <div class=" my-4 w-[95%] sm:w-[80%] mx-auto outline outline-offset-4 rounded-md outline-sky-500">
-    <InsertDelete :refreshTable="refreshTable" />
+    <!-- in arena page do not show -->
+    <InsertDelete v-if="showInsert" :refreshTable="refreshTable" />
 
 
     <UCard class="w-full mt-20" :ui="{
@@ -217,13 +252,13 @@ onMounted(() => {
 
 
 
-      <UTable dir="auto" :columns="columnsTable" :rows="rows">
+      <UTable dir="auto" v-model="selected" @select="select" :columns="columnsTable" :rows="rows">
 
 
         <template #answers-data="{ row }">
           <UPopover v-if="row.answers.length > 0" :mode="windowWidth <= 425 ? 'click' : 'hover'"
             :popper="{ placement: 'top-end', arrow: true, offsetDistance: 20 }">
-            <UButton color="primary" label="show" />
+            <UButton color="primary" :label="showRightChoose(row.answers)" />
 
             <template #panel>
               <div class="p-2 divide-y">
@@ -231,7 +266,7 @@ onMounted(() => {
                   :class="windowWidth <= 425 ? ' text-[10px]' : 'text-base'">
                   {{ index + 1 }}. <span class="dark:text-slate-200 text-slate-800">{{ answer.A_text }}</span> /
                   <span :class="answer.isCorrect === true ? 'text-green-500' : 'text-red-500'">{{ answer.isCorrect
-                  }}</span>
+                    }}</span>
                 </p>
               </div>
             </template>
@@ -241,8 +276,9 @@ onMounted(() => {
 
 
         <template #Q_imageUrl-data="{ row }">
-          <UPopover v-if="row.Q_imageUrl !== null" :popper="{ placement: 'top', offsetDistance: 0 }">
-            <UButton @click="fetchImage(row.Q_imageUrl)" color="primary" :label="row.Q_imageUrl" />
+          <UPopover v-if="row.Q_imageUrl !== null" :mode="windowWidth <= 425 ? 'click' : 'hover'"
+            :popper="{ placement: 'top', offsetDistance: 0 }">
+            <UButton @mouseover="fetchImage(row.Q_imageUrl)" color="primary" :label="row.Q_imageUrl" />
 
             <template #panel>
               <div class="p-2">
@@ -256,8 +292,8 @@ onMounted(() => {
                     </linearGradient>
                   </defs>
                   <rect width="100%" height="100%" fill="url(#bgGradient)" />
-                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1" text-anchor="middle"
-                    alignment-baseline="middle">
+                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1"
+                    text-anchor="middle" alignment-baseline="middle">
                     Not Found
                   </text>
                 </svg>
@@ -269,8 +305,9 @@ onMounted(() => {
 
 
         <template #A_imageUrl-data="{ row }">
-          <UPopover v-if="row.A_imageUrl !== null" :popper="{ placement: 'auto', offsetDistance: 0 }">
-            <UButton @click="fetchImage(row.A_imageUrl)" color="primary" :label="row.A_imageUrl" />
+          <UPopover v-if="row.A_imageUrl !== null" :mode="windowWidth <= 425 ? 'click' : 'hover'"
+            :popper="{ placement: 'auto', offsetDistance: 0 }">
+            <UButton @mouseover="fetchImage(row.A_imageUrl)" color="primary" :label="row.A_imageUrl" />
 
             <template #panel>
               <div class="p-2">
@@ -284,8 +321,8 @@ onMounted(() => {
                     </linearGradient>
                   </defs>
                   <rect width="100%" height="100%" fill="url(#bgGradient)" />
-                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1" text-anchor="middle"
-                    alignment-baseline="middle">
+                  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="#ecf0f1"
+                    text-anchor="middle" alignment-baseline="middle">
                     Not Found
                   </text>
                 </svg>
@@ -322,6 +359,7 @@ onMounted(() => {
 
 
       <!-- Number of rows & Pagination -->
+
       <template #footer>
         <div class="flex flex-wrap justify-between items-center">
           <div>
@@ -337,21 +375,22 @@ onMounted(() => {
           </div>
 
           <UPagination v-model="page" :page-count="pageCount" :total="filteredRows.length" :ui="{
-            wrapper: 'flex items-center gap-1',
-            rounded: '!rounded-full min-w-[32px] justify-center',
-            default: {
-              activeButton: {
-                variant: 'outline'
-              }
-            }
-          }" />
+      wrapper: 'flex items-center gap-1',
+      rounded: '!rounded-full min-w-[32px] justify-center',
+      default: {
+        activeButton: {
+          variant: 'outline'
+        }
+      }
+    }" />
         </div>
       </template>
     </UCard>
+
+    <!-- in dashboard page do not show -->
+    <review-questions v-if="!showInsert" />
   </div>
 </template>
 
 
-<style>
-
-</style>
+<style></style>

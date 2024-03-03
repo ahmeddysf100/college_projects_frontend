@@ -36,8 +36,8 @@ const logout = () => {
 
 const menuitems = [
   {
-    title: "Features",
-    path: "#",
+    title: "Arena",
+    path: "/arena",
   },
   {
     title: "Quiz",

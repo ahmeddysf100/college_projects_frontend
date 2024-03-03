@@ -10,36 +10,48 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const image = ref<Blob>();
   const questionById = ref();
   const D_question = ref();
-  
+  const selectedQuestions = ref<any[]>([]);
+
   const setDataTable = (data?: any) => (dataTable.value = data);
   const setApiErrors = (data?: string | null) => (apiErrors.value = data);
   const setInsertRes = (data?: any) => (insertRes.value = data);
   const setImage = (data?: Blob) => (image.value = data);
   const setD_question = (data?: any) => (D_question.value = data);
   const setQuestionById = (data?: any) => (questionById.value = data);
-  
+  const addSelectedQuestion = (data?: any) => {
+    selectedQuestions.value.push(data);
+    // console.log('element added to selected',selectedQuestions.value)
+  };
+  const removeSelectedQuestion = (data?: any) => {
+    selectedQuestions.value.splice(data,1);
+    // console.log('element removed to selected',selectedQuestions.value)
+  };
+
   async function getAllQuestions() {
     try {
-      const res = await $fetch<any>("http://192.168.31.170:3333/storage/questions");
+      const res = await $fetch<any>(
+        "http://192.168.31.170:3333/storage/questions"
+      );
       setDataTable(res);
     } catch (error) {
       setDataTable();
       console.log(error);
     }
   }
-  
- 
 
   const insertQuestion = async (data: any) => {
     try {
       // console.log(token)
-      const res = await $fetch<any>("http://192.168.31.170:3333/storage/question", {
-        method: "POST",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${useStore.token}`,
-        },
-      });
+      const res = await $fetch<any>(
+        "http://192.168.31.170:3333/storage/question",
+        {
+          method: "POST",
+          body: data,
+          headers: {
+            Authorization: `Bearer ${useStore.token}`,
+          },
+        }
+      );
       setInsertRes(res);
     } catch (error: any) {
       setInsertRes();
@@ -49,28 +61,26 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
       useModel.setModalValues(
         true,
-        error.response.statusText +" "+ error.response._data.statusCode,
+        error.response.statusText + " " + error.response._data.statusCode,
         JSON.stringify(error.response._data.message, null, 2)
       );
       console.log(error.response);
     }
   };
 
-
-  
-
   const getImageByName = async (data: any) => {
     // console.table({data: data , token: token})
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/storage/getImage/${data}`
-      ,{
-        headers: {
-          Authorization: `Bearer ${useStore.token}`,
-        },
-      });
+        `http://192.168.31.170:3333/storage/getImage/${data}`,
+        {
+          headers: {
+            Authorization: `Bearer ${useStore.token}`,
+          },
+        }
+      );
       setImage(res);
-      console.log(res);
+      // console.log(res);
     } catch (error) {
       setImage();
       setApiErrors(
@@ -84,10 +94,11 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setQuestionById();
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/storage/getOneQuesion/${data}`,{
+        `http://192.168.31.170:3333/storage/getOneQuesion/${data}`,
+        {
           headers: {
             Authorization: `Bearer ${useStore.token}`,
-          }
+          },
         }
       );
       setQuestionById(res);
@@ -104,12 +115,15 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const deleteOneQuestion = async (data: any) => {
     await setD_question();
     try {
-      const res = await $fetch<any>(`http://192.168.31.170:3333/storage/${data}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${useStore.token}`,
-        },
-      });
+      const res = await $fetch<any>(
+        `http://192.168.31.170:3333/storage/${data}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${useStore.token}`,
+          },
+        }
+      );
       await setD_question(res);
       console.log(res);
     } catch (error: any) {
@@ -120,7 +134,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       console.log(error);
       useModel.setModalValues(
         true,
-        error.response.statusText +" "+ error.response._data.statusCode,
+        error.response.statusText + " " + error.response._data.statusCode,
         JSON.stringify(error.response._data.message, null, 2)
       );
     }
@@ -133,6 +147,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     dataTable,
     D_question,
     questionById,
+    selectedQuestions,
     setImage,
     setDataTable,
     getAllQuestions,
@@ -140,5 +155,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     getImageByName,
     getOneQuestion,
     deleteOneQuestion,
+    addSelectedQuestion,
+    removeSelectedQuestion,
   };
 });

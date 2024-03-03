@@ -52,3 +52,19 @@ export interface FilteredItem {
   answers: answersItem[]; // Adjust the type based on your actual structure
   AnswerExplanation: AnswerExplanationItem[];
 }
+
+
+export interface Question {
+  id:              number;
+  Q_imageUrl?:      string;
+  Q_text?:          string;
+  correctAnswer?:   string;
+  answers?:         answer[];
+  explanationText?: string;
+  A_imageUrl?:      string;
+}
+
+export interface answer {
+A_text: string;
+isCorrect: string;
+}
