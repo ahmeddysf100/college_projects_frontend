@@ -27,6 +27,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     // console.log('element removed to selected',selectedQuestions.value)
   };
 
+
+  
+
   async function getAllQuestions() {
     try {
       const res = await $fetch<any>(

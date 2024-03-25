@@ -16,7 +16,7 @@ const blobArray = ref<blobArray[]>([])
 
 watch(useDash.selectedQuestions, (newVal, oldVal) => {
   rawData.value = newVal;
-  // console.log('arena ...', rawData.value);
+  console.log('arena ...', rawData.value);
   // console.log(rawData.value)
   if (newVal.length >= oldVal.length) {
     rawData.value.map(async (r: Question) => {
@@ -26,7 +26,7 @@ watch(useDash.selectedQuestions, (newVal, oldVal) => {
       }
     })
   }
-  console.log(imagesUrl.value)
+  // console.log(imagesUrl.value)
 });
 
 const temp = ref()
@@ -34,21 +34,21 @@ const getImage = async (url: string) => {
   await useDash.setImage();
   await useDash.getImageByName(url);
   blobArray.value.push({ Q_imageUrl: url, blob: useDash.image })
-  console.log(blobArray.value)
+  // console.log(blobArray.value)
 }
 
-function getBlobUrl(url: string): string {
+ function getBlobUrl(url: string): string {
   const blob = blobArray.value.find(item => item.Q_imageUrl === url)?.blob;
   if (blob) {
     return URL.createObjectURL(blob);
   } else {
-    return '';
-  }
-}
+    
+    return ''
+  }}
 
-const isSelected = (index: any, index2: any, item: any) => {
-  return userAnswer.value[index] === item.answers[index2].A_text;
-}
+  const isSelected = (index: any, index2: any, item: any) => {
+    return userAnswer.value[index] === item.answers[index2].A_text;
+  }
 </script>
 
 <template>

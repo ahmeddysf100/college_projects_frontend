@@ -3,6 +3,7 @@ import type {
   AnswerExplanationItem,
   FilteredItem,
   OriginalItem,
+  Question,
   answersItem,
 } from "~/types";
 
@@ -130,7 +131,7 @@ const pageCount = ref(5);
 const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 const pageTo = computed(() => Math.min(page.value * pageCount.value, filteredRows.value.length))
 
-const rows = computed(() => {
+const rows = computed<Question[]>(() => {
   return filteredRows.value.slice(
     (page.value - 1) * pageCount.value,
     page.value * pageCount.value
@@ -169,23 +170,22 @@ function select(row: any) {
     useDash.removeSelectedQuestion(index);
   }
   // console.log(selected.value)
+  selected.value = [...selected.value]
 }
 
+const selected = ref<Question[]>([]);
 
-const selected = ref<any[]>([]);
+// Watch for changes in the selected array
+watch(selected, (newSelected, oldSelected) => {
+  // console.log(selected.value)
+  // const added = newSelected.filter(item => !oldSelected.includes(item));
+  // const removed = oldSelected.filter(item => !newSelected.includes(item));
 
-// const selectedQuestions = computed(() => useDash.selectedQuestions);
-
-// // Watch for changes in the selected array
-// watch(selected, (newSelected, oldSelected) => {
-
-//   const added = newSelected.filter(item => !oldSelected.includes(item));
-//   const removed = oldSelected.filter(item => !newSelected.includes(item));
-//   console.log({ newSelected: newSelected, added: added, oldSelected: oldSelected, removed: removed })
-//   // Update setSelectedQuestion with added elements
-//   useDash.addSelectedQuestion(added);
-//   useDash.removeSelectedQuestion(removed);
-// });
+  // when user click reset btn of selected col  this if reset selected col in reviewquestions component becuase select func do not work with reset btn
+  if (selected.value.length === 0) {
+    useDash.selectedQuestions.length = 0
+  }
+});
 
 
 const showRightChoose = (row: any[]) => {
