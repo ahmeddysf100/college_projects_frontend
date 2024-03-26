@@ -33,7 +33,7 @@ const temp = ref()
 const getImage = async (url: string) => {
   await useDash.setImage();
   await useDash.getImageByName(url);
-  blobArray.value.push({ Q_imageUrl: url, blob: useDash.image })
+  blobArray.value.push({ Q_imageUrl: url, blob: useDash.image as any })
   // console.log(blobArray.value)
 }
 

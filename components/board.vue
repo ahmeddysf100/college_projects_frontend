@@ -149,7 +149,7 @@ const fetchImage = async (imageUrl: any) => {
       await useDash.setImage();
       await useDash.getImageByName(imageUrl);
       tempImageUrl.value = imageUrl;
-      tempBlob.value = URL.createObjectURL(useDash.image);
+      tempBlob.value = URL.createObjectURL(useDash.image as any);
       blob.value = tempBlob.value;
     } catch (error) {
       blob.value = "";
