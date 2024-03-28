@@ -13,7 +13,7 @@ onMounted(() => {
   };
   console.log(headers)
   // Create the socket instance with extra headers
-  const socket = io('http://192.168.31.170:3333', {
+  const socket = io('ws://192.168.31.170:3333', {
     // withCredentials:true,
     extraHeaders: headers,
     autoConnect: false,

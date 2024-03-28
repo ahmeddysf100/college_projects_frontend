@@ -1,49 +1,31 @@
 <script lang="ts" setup>
-import type { CreateArena } from '~/types';
 
-definePageMeta({
-  middleware: ["auth"],
-  layout: "default",
-});
-const useDash = useDashboardStore();
-const useUser = useUserStore()
-const showInsert = ref(false)
-
-const time = [30, 60, 90]
-const selectTime = ref(time[0])
-
-const numPlayers = [1, 2, 3,4,5,]
-const selectNumPlayers = ref(numPlayers[0])
-
-const createArena = reactive<CreateArena>({
-  arenaGear: useDash.selectedQuestions,
-  roundTime: time[0],
-  numOfPlayers: numPlayers[0],
-  adminName: useUser.user?.username,
-  hasStarted: false
-})
-
-const x= () =>{
-  console.log(createArena)
+// definePageMeta({
+//   middleware: ["auth"],
+//   layout: "default",
+// });
+const showMain = ref(true)
+const createArena = ref(false)
+const toggleCreateArena = () => {
+  showMain.value = false
+  createArena.value = true
+  console.log(createArena.value)
 }
 </script>
 
 
 <template>
-  <div >
-    <div class=" my-4 w-[95%] sm:w-[80%] mx-auto outline outline-offset-4 rounded-md outline-sky-500">
-      <div class="flex flex-row gap-4 p-4">
-        <UFormGroup label="Select the time of each round" class=" basis-2/4">
-          <USelect class="" size="lg" v-model="createArena.roundTime" :options="time" />
-        </UFormGroup>
-        <UFormGroup label="Select the number of players who access the arena" class=" basis-2/4">
-          <USelect class="" size="lg" v-model="createArena.numOfPlayers" :options="numPlayers" />
-        </UFormGroup>
-      </div>
+  <div v-if="showMain" class="grid grid-cols-2 place-content-center h-screen w-3/6 mx-auto gap-8 ">
+    <h1 class=" col-span-2 text-xl font-bold text-center mb-4">WELCOME TO ARENA !</h1>
+    <div class=" col-span-1  place-content-center">
+      <UButton @click="toggleCreateArena" :ui="{ font: 'font-bold' }" size="xl" variant="outline"
+        label="CREATE ARENA ⚔️ !" block />
     </div>
-    <board :showInsert="showInsert" />
-    <UButton @click="x" class=" grid mx-auto w-3/12 mb-4" size="xl"  label="Create Arena"/>
+    <div class=" col-span-1  place-content-center">
+      <UButton :ui="{ font: 'font-bold' }" size="xl" variant="outline" label="JOIN ARENA 🏹 !" block />
+    </div>
   </div>
+  <ArenaCreateArena v-if="createArena"  />
 </template>
 
 

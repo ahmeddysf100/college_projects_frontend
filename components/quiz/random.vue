@@ -68,7 +68,7 @@ const startQuiz = async () => {
 
 
   // gggggggggggggggggggggggggggggggget image
-  const tempBlob = ref(null);
+  const tempBlob = ref();
   // reset blob array in evry new req 
   blob.value = []
   for (let i = 0; i < rawData.value.length; i++) {
@@ -76,7 +76,7 @@ const startQuiz = async () => {
 
       useDash.setImage();
       await useDash.getImageByName(rawData.value[i].Q_imageUrl);
-      tempBlob.value = URL.createObjectURL(useDash.image);
+      tempBlob.value = URL.createObjectURL(useDash.image as any);
       blob.value.push(tempBlob.value);
     } else {
       blob.value.push(null);
