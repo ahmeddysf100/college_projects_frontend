@@ -219,7 +219,7 @@ async function onDeletion() {
           </p>
         </template>
 
-        <UForm @submit="onSubmitinsert">
+        <form @submit="onSubmitinsert">
           <UFormGroup label="Subject Name" name="subject_name" class="mb-3" required>
             <USelectMenu v-model="insertForm.subject_name" :options="selectSubject" />
           </UFormGroup>
@@ -315,7 +315,7 @@ async function onDeletion() {
           </UFormGroup>
 
           <UButton type="submit" label="Add" block />
-        </UForm>
+        </form>
       </UCard>
     </template>
 
