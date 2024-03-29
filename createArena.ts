@@ -3,9 +3,17 @@ export interface CreateArena {
   accessToken: string;
 }
 
+export interface arenaForDto {
+  arenaGear: ArenaQear[];
+  numOfPlayers: number;
+  adminName: string | undefined;
+  hasStarted: boolean;
+  roundTime: number;
+}
+
 export interface Arena {
   id: string;
-  arenaQear: ArenaQear[];
+  arenaGear: ArenaQear[];
   numOfPlayers: number;
   adminId: string;
   hasStarted: boolean;

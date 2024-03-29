@@ -53,7 +53,6 @@ const deletion = async () => {
 <template>
   <div>
     <!-- <UButton label="Open" @click="isOpen = !isOpen" /> -->
-    <p class="text-"></p>
     <UModal v-model="isOpen" prevent-close>
       <UCard :ui="{
         ring: '',

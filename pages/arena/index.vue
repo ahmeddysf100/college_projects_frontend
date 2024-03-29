@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
-// definePageMeta({
-//   middleware: ["auth"],
-//   layout: "default",
-// });
+definePageMeta({
+  middleware: ["auth-student"],
+  layout: "default",
+});
 const showMain = ref(true)
 const createArena = ref(false)
 const toggleCreateArena = () => {
