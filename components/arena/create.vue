@@ -41,7 +41,7 @@ const x = async () => {
 
 
 <template>
-  <div v-motion :initial="{ opacity: 0, x: 1000 }" :visible="{ opacity: 1, x: 0, transition: { duration: 300 } }">
+  <div v-motion :initial="{ opacity: 0, x: -1000 }" :visible="{ opacity: 1, x: 0, transition: { duration: 300 } }">
     <div class=" my-4 w-[95%] sm:w-[80%] mx-auto outline outline-offset-4 rounded-md outline-sky-500">
       <div class="flex flex-row gap-4 p-4">
         <UFormGroup label="Select the time of each round" class=" basis-2/4">

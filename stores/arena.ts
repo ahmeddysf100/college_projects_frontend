@@ -6,10 +6,10 @@ export const useMyCreateArenaStore = defineStore("arena", () => {
   const useUser = useUserStore();
   const useModel = useMyModalErrorStore();
   const arenaData = ref<CreateArena>();
-  const admin_arena_token = useCookie('admin_arena_token',{
+  const admin_arena_token = useCookie('adminArenaToken',{
     maxAge: 7200
   })
-  const admin_arena_id = useCookie('admin_arena_id',{
+  const admin_arena_id = useCookie('adminArenaId',{
     maxAge: 7200
   })
 

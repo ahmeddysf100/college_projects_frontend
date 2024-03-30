@@ -18,16 +18,25 @@ export interface Arena {
   adminId: string;
   hasStarted: boolean;
   roundTime: number;
-  participants: Nominations;
+  participants: participant[];
   nominations: Nominations;
   rankings: Rankings[];
   results: any[];
 }
 
+export interface participant {
+  [userId: string]: part;
+}
+
+export interface part {
+  name: string;
+  isOnline: boolean;
+}
+
 type NominationID = string;
 
 export type Rankings = {
-  [userID: string]: NominationID[];
+  [userID: string]: NominationID;
 };
 
 export interface ArenaQear {

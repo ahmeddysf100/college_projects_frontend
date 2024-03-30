@@ -25,7 +25,7 @@ const toggleCreateArena = () => {
       <UButton :ui="{ font: 'font-bold' }" size="xl" variant="outline" label="JOIN ARENA 🏹 !" block />
     </div>
   </div>
-  <ArenaCreateArena v-if="createArena"  />
+  <ArenaCreate v-if="createArena"  />
 </template>
 
 
