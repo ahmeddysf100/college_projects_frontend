@@ -11,6 +11,11 @@ export interface arenaForDto {
   roundTime: number;
 }
 
+export interface joinArenaDto {
+  arenaId: string;
+  name: string;
+}
+
 export interface Arena {
   id: string;
   arenaGear: ArenaQear[];

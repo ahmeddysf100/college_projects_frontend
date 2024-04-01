@@ -3,7 +3,7 @@ import type { arenaForDto, CreateArena } from '~/createArena';
 
 const useDash = useDashboardStore();
 const useUser = useUserStore()
-const useArena = useMyCreateArenaStore()
+const useArena = useArenaStore()
 const showInsert = ref(false)
 const arenaId = computed(() => useArena.admin_arena_id)
 
@@ -34,7 +34,7 @@ const x = async () => {
   await useArena.createArena(createArena)
   if (!!useArena.admin_arena_token) {
     console.log(useArena.admin_arena_token)
-    navigateTo(`http://localhost:3000/arena/${arenaId.value}`, { external: true, replace: true })
+    navigateTo(`http://192.168.31.170:3000/arena/${arenaId.value}`, { external: true, replace: true })
   }
 }
 </script>

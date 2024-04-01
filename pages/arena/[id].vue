@@ -2,35 +2,37 @@
 import { io } from "socket.io-client";
 const rout = useRoute();
 const useUser = useUserStore()
-const useArena = useMyCreateArenaStore()
+const useArena = useArenaStore()
 // const token = computed(() =>  useArena.admin_arena_token || 'useArena.user_arena_token') 
-const token = useCookie('adminArenaToken')
+const token = ref()
+useUser.user?.role === 'user' ? token.value = useCookie('userArenaToken').value : token.value = useCookie('adminArenaToken').value
 const arena = ref()
+
 
 onMounted(() => {
   // Define your headers
   // const headers = {
-  //   roomid: rout.params.id as string,  // Example header
-  //   Authorization: useUser.token as string, // Example authorization header
-  // };
-  // console.log(headers)
-  // Create the socket instance with extra headers
-  const socket = io('ws://192.168.31.170:3333/arena', {
-    // withCredentials:true,
-    // extraHeaders: headers,
-    autoConnect: false,
-    auth: {
-      token: token.value,
-    }
-
-  });
-  // Connect to the socket server
-  socket.connect();
-
-
-  socket.on("arena_updated", (data) => {
-    console.log(data);
-    arena.value = JSON.stringify(data, null, 2)
+    //   roomid: rout.params.id as string,  // Example header
+    //   Authorization: useUser.token as string, // Example authorization header
+    // };
+    // console.log(headers)
+    // Create the socket instance with extra headers
+    const socket = io('ws://192.168.31.170:3333/arena', {
+      // withCredentials:true,
+      // extraHeaders: headers,
+      autoConnect: false,
+      auth: {
+        token: token.value,
+      }
+      
+    });
+    // Connect to the socket server
+    socket.connect();
+    
+    
+    socket.on("arena_updated", (data) => {
+      console.log(data);
+      arena.value = JSON.stringify(data, null, 2)
   });
 })
 console.log(rout.params.id);

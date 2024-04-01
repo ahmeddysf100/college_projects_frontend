@@ -1,15 +1,23 @@
 <script lang="ts" setup>
 
+
 definePageMeta({
   middleware: ["auth-student"],
   layout: "default",
 });
 const showMain = ref(true)
 const createArena = ref(false)
+const joinArena = ref(false)
 const toggleCreateArena = () => {
   showMain.value = false
   createArena.value = true
-  console.log(createArena.value)
+  // console.log(createArena.value)
+}
+const toggleJoinArena = () => {
+  showMain.value = false
+  joinArena.value = true
+  // console.log(joinArena.value)
+  
 }
 </script>
 
@@ -22,10 +30,12 @@ const toggleCreateArena = () => {
         label="CREATE ARENA ⚔️ !" block />
     </div>
     <div class=" col-span-1  place-content-center">
-      <UButton :ui="{ font: 'font-bold' }" size="xl" variant="outline" label="JOIN ARENA 🏹 !" block />
+      <UButton @click="toggleJoinArena" :ui="{ font: 'font-bold' }" size="xl" variant="outline" label="JOIN ARENA 🏹 !"
+        block />
     </div>
   </div>
-  <ArenaCreate v-if="createArena"  />
+  <ArenaCreate v-if="createArena" />
+  <ArenaJoin v-if="joinArena" />
 </template>
 
 

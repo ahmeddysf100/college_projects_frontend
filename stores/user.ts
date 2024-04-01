@@ -12,7 +12,7 @@ export const useUserStore = defineStore("user", () => {
   });
   const apiErrors = ref();
 
-  console.log("Token in useUserStore:", token.value);
+  // console.log("Token in useUserStore:", token.value);
   const setToken = (data?: any) => (token.value = data);
   const setUser = (data?: any) => (user.value = data);
   const setUserId = (data?: any) => (userId.value = data);
