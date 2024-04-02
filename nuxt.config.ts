@@ -18,4 +18,7 @@ ssr: true,
   colorMode: {
     preference: "dark",
   },
+  plugins:[
+    {src:'~/plugins/auth.ts', mode: 'client'},
+  ]
 });

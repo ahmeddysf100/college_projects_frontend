@@ -5,7 +5,7 @@ const useDash = useDashboardStore();
 const useUser = useUserStore()
 const useArena = useArenaStore()
 const showInsert = ref(false)
-const arenaId = computed(() => useArena.admin_arena_id)
+const arenaId = computed(() => useArena.arenaId)
 
 
 const time = [30, 60, 90]
@@ -32,8 +32,8 @@ const x = async () => {
   createArena.numOfPlayers = +createArena.numOfPlayers;
   console.log(createArena)
   await useArena.createArena(createArena)
-  if (!!useArena.admin_arena_token) {
-    console.log(useArena.admin_arena_token)
+  if (!!useArena.admin_arena_id) { //if arena adminId STORED go to arena
+    console.log(useArena.admin_arena_id)
     navigateTo(`http://192.168.31.170:3000/arena/${arenaId.value}`, { external: true, replace: true })
   }
 }
