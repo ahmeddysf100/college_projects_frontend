@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+definePageMeta({
+  middleware: ["auth-student"],
+  layout: "default",
+});
+
 onMounted(() => {
   quiz.random = true
   outlineRandom.value = 'text-green-500 dark:text-green-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-[#ace5af] selectedBTN';

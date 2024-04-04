@@ -32,7 +32,7 @@ const x = async () => {
   createArena.numOfPlayers = +createArena.numOfPlayers;
   console.log(createArena)
   await useArena.createArena(createArena)
-  if (!!useArena.admin_arena_id) { //if arena adminId STORED go to arena
+  if (!!useArena.admin_arena_id) { //if adminId STORED go to arena
     console.log(useArena.admin_arena_id)
     navigateTo(`http://192.168.31.170:3000/arena/${arenaId.value}`, { external: true, replace: true })
   }

@@ -197,7 +197,7 @@ const windowWidth = ref();
 onMounted(() => {
   if (process.client) {
     windowWidth.value = window.innerWidth;
-    console.log(windowWidth);
+    // console.log(windowWidth);
   } else {
     console.log(
       "Code is running on the server side or in a context where window is not available."

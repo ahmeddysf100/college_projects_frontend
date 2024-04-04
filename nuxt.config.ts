@@ -19,6 +19,6 @@ ssr: true,
     preference: "dark",
   },
   plugins:[
-    {src:'~/plugins/auth.ts', mode: 'client'},
+    {src:'~/plugins/auth.ts', mode: 'all'},
   ]
 });

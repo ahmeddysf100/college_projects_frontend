@@ -27,6 +27,21 @@ export interface Arena {
   nominations: Nominations;
   rankings: Rankings[];
   results: any[];
+  totalStages: number;
+  currentStage: number;
+}
+export interface Arena_updated {
+  id: string;
+  numOfPlayers: number;
+  adminId: string;
+  hasStarted: boolean;
+  roundTime: number;
+  participants: any[];
+  nominations: any;
+  rankings: any[];
+  results: any[];
+  totalStages: number;
+  currentStage: number;
 }
 
 export interface participant {
