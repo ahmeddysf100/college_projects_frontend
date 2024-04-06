@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { io } from "socket.io-client";
-import type { number, string } from "zod";
-import type { Arena, Arena_updated, part, participant } from "~/createArena";
+import type { Arena, Arena_updated, part, participant, Ranks } from "~/createArena";
 const useUser = useUserStore()
 const useArena = useArenaStore()
 const rout = useRoute();
@@ -11,54 +10,20 @@ const token = useCookie('userArenaToken')
 const adminId = useCookie('adminArenaId')
 const arena = ref<Arena_updated | null>(null); // Initialize as null
 // const arena = ref(); // Initialize as null
-const arenaData = [
-  { "3R1ZfxuKgE9kSO1fNhTS6": { "name": "ahha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTS7": { "name": "bhha", "isOnline": false } },
-  { "3R1ZfxuKgE9kSO1fNhTS8": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTSe": { "name": "ahha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTS1": { "name": "bhha", "isOnline": false } },
-  { "3R1ZfxuKgE9kSO1fNhTS2": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTSh": { "name": "ahha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTS3": { "name": "bhha", "isOnline": false } },
-  { "3R1ZfxuKgE9kSO1fNhTS4": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTSm": { "name": "ahha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTS5": { "name": "bhha", "isOnline": false } },
-  { "3R1ZfxuKgE9kSO1fNhTSv": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTSs": { "name": "ahha", "isOnline": true } },
-  { "3R1ZfxuKgE9kSO1fNhTSk": { "name": "bhha", "isOnline": false } },
-  { "3R1ZfxuKgE9kSO1fNhTSz": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKgE9SO1fNhTSzd": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxuKg9kSO1fNhTSsz": { "name": "chha", "isOnline": true } },
-  { "3R1ZfxugE9kS1fNhvTtSz": { "name": "chha", "isOnline": true } },
-  { "3R1ZfuKgE9kSO1fNhTvSz": { "name": "chha", "isOnline": true } },
-  { "3R1fxuKgE9kSO1fNhTmSz": { "name": "chha", "isOnline": true } },
-];
+
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
 
-const data = {
-  "participants": {
-    "E4TVX_OI5LB55sj38KU1u": {
-      "name": "ahha",
-      "isOnline": true
-    },
-    "E4TVX_OI5LssB55sj38KU1u": {
-      "name": "ahha2",
-      "isOnline": true
-    },
-    "E4TVX_OI5LffB55sj38KU1u": {
-      "name": "ahha3",
-      "isOnline": true
-    }
-  },
-  "rankings": {
-    "ahha": 0,
-    "ahha2": 2,
-    "ahha3": 4
-  }
-};
 
-const rank = computed(() => useRank(arena.value?.participants, arena.value?.rankings))
+
+const rank = computed(() => arena.value?.rankings)
+// const rank = ref<Ranks[]>([
+//   { "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 },
+//   { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 },
+//   { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 },
+//   { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 },
+//   { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 },
+//   { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
 
 
 
@@ -111,15 +76,55 @@ onMounted(() => {
 })
 console.log(rout.params.id);
 console.log(token.value);
+
+const shufle = () => {
+  // rank.value.sort((a, b) => Math.random() - 0.5); // Shuffle the rank array
+
+  //   rank.value = 
+  //   [
+  //     { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 1 },
+  //     { "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 3 },
+  //     { "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w1", "rank": 3 },
+  //     { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 2 },
+  //     { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 1 },
+  //     { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },
+  //     { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 },]
+
+
+}
+
+const isOnline = (userId: any) => {
+  return computed(() => participants.value?.[userId]?.isOnline || false);
+}
+
 </script>
 
 <template>
   <div>
-    <div v-if="participants && adminId"
-      class="disable-scrollbars  divide-blue-200 flex flex-nowrap flex-col mx-auto mt-4 w-[99%] max-h-[23rem] gap-4 overflow-y-scroll border-4 rounded-md">
-      <ArenaPlayer v-for="(item, index) in rank" :key="index" :item="item" :img="index" :name="item"
-        :max="arena?.totalStages" />
+    <div v-if="participants  "
+      class="disable-scrollbars  divide-blue-200 flex flex-nowrap flex-col mx-auto mt-4 w-[99%]  max-h-[23rem] gap-4 overflow-y-scroll border-4 rounded-md">
+      <TransitionGroup name="list">
+        <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
+          :max="arena?.totalStages" :participants="isOnline(item.userId)" />
+
+
+        <!-- <div class="pt-3 border" v-for="(item, index) in rank" :key="item.userId">
+          <UProgress :value="item.rank" :max="arena?.totalStages" color="primary" size="lg">
+            <template #indicator="{ percent }">
+              <div class="text-right" :style="{ width: `${percent}%` }">
+                <UChip :color="participants[item.userId] === true ? 'primary' : 'red'"
+                  :text="participants[item.userId] === true ? 'online' : 'offline'" size="2xl" inset>
+                  <UAvatar :src="`https://i.pravatar.cc/1000?img=${index + 1}`" size="xl" />
+                </UChip>
+                <p>{{ item.name }}/<span class="text-red-500 font-bold">{{ percent }}%</span></p>
+              </div>
+            </template>
+</UProgress>
+</div> -->
+      </TransitionGroup>
+
     </div>
+    <UButton label="shufle" @click="shufle" />
 
     <h1 class="text-center mt-10 text-red-500">{{ rout.params.id }}</h1>
     <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
@@ -141,5 +146,24 @@ console.log(token.value);
   /* Firefox */
   -ms-overflow-style: none;
   /* IE 10+ */
+}
+
+.list-move,
+/* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
 }
 </style>

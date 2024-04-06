@@ -3,6 +3,12 @@ export interface CreateArena {
   accessToken: string;
 }
 
+export interface Ranks {
+  name: string;
+  userId: string;
+  rank: number;
+}
+
 export interface arenaForDto {
   arenaGear: ArenaQear[];
   numOfPlayers: number;
