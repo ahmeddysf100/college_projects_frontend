@@ -8,7 +8,7 @@ ssr: true,
       enabled: true,
     },
   },
-  modules: ["@nuxt/ui", "@pinia/nuxt",'@vueuse/motion/nuxt'],
+  modules: ["@nuxt/ui", "@pinia/nuxt",'@vueuse/motion/nuxt',],
   imports: {
     dirs: ["./stores"],
   },

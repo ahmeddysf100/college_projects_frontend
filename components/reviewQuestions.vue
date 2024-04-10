@@ -37,18 +37,19 @@ const getImage = async (url: string) => {
   // console.log(blobArray.value)
 }
 
- function getBlobUrl(url: string): string {
+function getBlobUrl(url: string): string {
   const blob = blobArray.value.find(item => item.Q_imageUrl === url)?.blob;
   if (blob) {
     return URL.createObjectURL(blob);
   } else {
-    
-    return ''
-  }}
 
-  const isSelected = (index: any, index2: any, item: any) => {
-    return userAnswer.value[index] === item.answers[index2].A_text;
+    return ''
   }
+}
+
+const isSelected = (index: any, index2: any, item: any) => {
+  return userAnswer.value[index] === item.answers[index2].A_text;
+}
 </script>
 
 <template>
@@ -79,12 +80,12 @@ const getImage = async (url: string) => {
 
       <div v-for="(i, index2) in item.answers" :key="i.A_text"
         :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
-    isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
+          isSelected(index, index2, item) ? '  bg-gradient-to-r from-[#86f4b4] to-[#93cbf1]' : 'outline outline-offset-2 outline-stone-400']">
         <input :id="`Q${index} option${index2}`" type="radio" :name="`Q${index}`" :value="i.A_text"
           v-model="userAnswer[index]" class="w-8 h-8 custom-radio cursor-pointer" required />
         <label :for="`Q${index} option${index2}`" class="self-center w-full py-2 text-center cursor-pointer "
           :class="isSelected(index, index2, item) ? 'text-black' : ''">{{
-    i.A_text }}</label>
+            i.A_text }}</label>
       </div>
 
 

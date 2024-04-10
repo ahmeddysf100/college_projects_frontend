@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { io } from "socket.io-client";
-import type { Arena, Arena_updated, part, participant, Ranks } from "~/createArena";
+import { Clipboard } from "v-clipboard";
+import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, part, participant, Ranks } from "~/createArena";
 const useUser = useUserStore()
 const useArena = useArenaStore()
 const rout = useRoute();
@@ -8,43 +9,31 @@ const toast = useToast()
 
 const token = useCookie('userArenaToken')
 const adminId = useCookie('adminArenaId')
-const arena = ref<Arena_updated | null>(null); // Initialize as null
-// const arena = ref(); // Initialize as null
+const arena = ref<Arena_updated_data | null>(null); // Initialize as null
+const gear = ref<Arena_updated_gear | string | null>(null); // Initialize as null
 
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
 
 
 
-const rank = computed(() => arena.value?.rankings)
-// const rank = ref<Ranks[]>([
-//   { "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 },
-//   { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 },
-//   { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 },
-//   { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 },
-//   { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 },
-//   { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
+// const rank = computed(() => arena.value?.rankings)
+const rank = ref<Ranks[]>([{ "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 }, { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 }, { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 }, { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 }, { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 }, { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
 
 
 
+const socket = io('ws://192.168.31.170:3333/arena', {
+  // withCredentials:true,
+  // extraHeaders: headers,
+  autoConnect: false,
+  auth: {
+    token: token.value,
+  }
+
+});
 
 onMounted(() => {
-  // Define your headers
-  // const headers = {
-  //   roomid: rout.params.id as string,  // Example header
-  //   Authorization: useUser.token as string, // Example authorization header
-  // };
-  // console.log(headers)
-  // Create the socket instance with extra headers
-  const socket = io('ws://192.168.31.170:3333/arena', {
-    // withCredentials:true,
-    // extraHeaders: headers,
-    autoConnect: false,
-    auth: {
-      token: token.value,
-    }
 
-  });
   // Connect to the socket server
   socket.connect();
 
@@ -65,15 +54,46 @@ onMounted(() => {
   })
 
 
-  socket.on("arena_updated", (data) => {
+  socket.on("arena_updated", (data: Arena_updated) => {
     console.log(data);
     arena.value = data.arenaData;
+    gear.value = data.gearData;
+    useArena.arena_updated_gear = data.gearData
+
     console.log(arena.value?.participants)
-    // toast.add({
-    //   title: data.title
-    // })
+    // console.log('gear',data.gearData)
+    console.log('gear', useArena.arena_updated_gear)
+
+    toast.add({
+      title: data.title
+    })
+    useArena.arena_updated_data = data.arenaData
   });
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+  const targetElement = document.getElementById('scrolltarget');
+  if (targetElement) {
+    targetElement.scrollIntoView({ behavior: 'smooth' });
+  }
+
 })
+
+const startArena = () => {
+  socket.emit('start_arena', (data: any) => {
+
+  })
+}
+
+const nominate = (data: any) => {
+  socket.emit('nominate', {
+    Q_id: data.Q_id,
+    text: data.text
+  })
+}
+
+
 console.log(rout.params.id);
 console.log(token.value);
 
@@ -97,34 +117,100 @@ const isOnline = (userId: any) => {
   return computed(() => participants.value?.[userId]?.isOnline || false);
 }
 
+const toClipBoard = () => {
+  try {
+    const x = Clipboard.copy(rout.params.id)
+    console.log(x)
+    toast.add({
+      title: `coped`
+    })
+  } catch (error) {
+    toast.add({
+      title: error as string
+    })
+  }
+}
 </script>
 
 <template>
-  <div>
-    <div v-if="participants  "
-      class="disable-scrollbars  divide-blue-200 flex flex-nowrap flex-col mx-auto mt-4 w-[99%]  max-h-[23rem] gap-4 overflow-y-scroll border-4 rounded-md">
-      <TransitionGroup name="list">
-        <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
-          :max="arena?.totalStages" :participants="isOnline(item.userId)" />
+  <div class="">
+
+    <div class="flex flex-row my-4 mx-4 gap-4 ">
+      <div class=" basis-1/4  ">
+        <UCard class=" "
+          :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+          <template class="" #header>
+            <p class="text-center font-bold text-2xl">leader board</p>
+          </template>
+          <label for="copy" class=" font-semibold mb-2">copy arena id</label>
+          <UButtonGroup id="copy" size="lg" orientation="horizontal">
+            <UInput class="text-center" v-model="rout.params.id" color="blue" variant="outline" readonly />
+            <UTooltip text="copy" :popper="{ placement: 'bottom' }">
+              <UButton @click="toClipBoard" color="blue" variant="outline" icon="i-heroicons-clipboard-document" />
+            </UTooltip>
+          </UButtonGroup>
+        </UCard>
+
+        <UCard class="mt-4"
+          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+          <!-- <template class="" #header>
+            <p class="text-center font-bold text-2xl">leader board</p>
+          </template> -->
+          <ArenaTimer v-if="gear" />
+
+          <div v-else class="flex items-center space-x-4">
+            <div class="space-y-2">
+              <USkeleton class="h-[320px] w-[320px]" :ui="{ rounded: 'rounded-xl' }" />
+            </div>
+          </div>
+        </UCard>
+      </div>
 
 
-        <!-- <div class="pt-3 border" v-for="(item, index) in rank" :key="item.userId">
-          <UProgress :value="item.rank" :max="arena?.totalStages" color="primary" size="lg">
-            <template #indicator="{ percent }">
-              <div class="text-right" :style="{ width: `${percent}%` }">
-                <UChip :color="participants[item.userId] === true ? 'primary' : 'red'"
-                  :text="participants[item.userId] === true ? 'online' : 'offline'" size="2xl" inset>
-                  <UAvatar :src="`https://i.pravatar.cc/1000?img=${index + 1}`" size="xl" />
-                </UChip>
-                <p>{{ item.name }}/<span class="text-red-500 font-bold">{{ percent }}%</span></p>
-              </div>
-            </template>
-</UProgress>
-</div> -->
-      </TransitionGroup>
+      <div class="basis-1/2 ">
+        <UCard
+          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-0 sm:py-0 sm:p-4' } }">
+          <template class="" #header>
+            <p class="text-center font-bold text-2xl">leader board</p>
+          </template>
+          <ArenaQuestions v-if="gear" id="scrolltarget" :nominate="nominate"/>
 
+          <div v-else class="flex items-center space-y-6">
+            <div class="space-y-2">
+              <USkeleton class="h-[32rem] w-[41rem]" :ui="{ rounded: 'rounded-xl' }" />
+              <USkeleton class="h-[2rem] w-[41rem]" :ui="{ rounded: 'rounded-xl' }" />
+            </div>
+          </div>
+        </UCard>
+      </div>
+
+
+      <div class="basis-1/4 ">
+        <UCard
+          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+          <template class="" #header>
+            <p class="text-center font-bold text-2xl">leader board</p>
+          </template>
+          <div v-if="participants"
+            class="disable-scrollbars  flex flex-nowrap flex-col mx-auto mt-4 transition-container max-h-[10rem] hover:max-h-[28rem]  gap-4 overflow-y-scroll border-y-4 border-y-indigo-300 px-4 rounded-3xl">
+            <TransitionGroup name="list">
+              <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
+                :max="arena?.totalStages" :participants="isOnline(item.userId)" />
+            </TransitionGroup>
+          </div>
+
+          <div v-else class="flex items-center space-x-4">
+            <USkeleton class="h-[14rem] w-[20rem]" />
+          </div>
+          <!-- <UButton label="shufle" @click="shufle" /> -->
+        </UCard>
+      </div>
     </div>
-    <UButton label="shufle" @click="shufle" />
+    <div class="grid">
+      <UButton @click="startArena" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
+    </div>
+
+
 
     <h1 class="text-center mt-10 text-red-500">{{ rout.params.id }}</h1>
     <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
@@ -148,6 +234,15 @@ const isOnline = (userId: any) => {
   /* IE 10+ */
 }
 
+
+.transition-container {
+  transition: max-height 0.5s ease;
+}
+
+
+
+
+
 .list-move,
 /* apply transition to moving elements */
 .list-enter-active,
@@ -165,5 +260,6 @@ const isOnline = (userId: any) => {
    animations can be calculated correctly. */
 .list-leave-active {
   position: absolute;
+  /* width: 100%; */
 }
 </style>

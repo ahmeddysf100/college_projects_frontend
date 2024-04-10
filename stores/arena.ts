@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Arena, arenaForDto, joinArenaDto } from "~/createArena";
+import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, arenaForDto, joinArenaDto } from "~/createArena";
 import type { CreateArena } from "~/createArena";
 
 export const useArenaStore = defineStore("arena", () => {
@@ -7,6 +7,8 @@ export const useArenaStore = defineStore("arena", () => {
   const useModel = useMyModalErrorStore();
   const toast = useToast();
 
+  const arena_updated_data = ref<Arena_updated_data>()
+  const arena_updated_gear = ref<Arena_updated_gear | string>()
   const arenaData = ref<CreateArena>();
   const arenaId = ref();
 
@@ -107,6 +109,8 @@ export const useArenaStore = defineStore("arena", () => {
     admin_arena_id,
     user_arena_token,
     arenaId,
+    arena_updated_data,
+    arena_updated_gear,
     createArena,
     joinArena,
   };

@@ -37,6 +37,30 @@ export interface Arena {
   currentStage: number;
 }
 export interface Arena_updated {
+  arenaData: Arena_updated_data;
+  gearData: Arena_updated_gear | string;
+  title: string;
+}
+
+export interface Arena_updated_gear {
+  id:                number;
+  Q_imageUrl:        string | null;
+  Q_text:            string | null;
+  correctAnswer:     string | null | number;
+  subjectId:         number;
+  createdAt:         Date;
+  updatedAt:         Date;
+  quizId:            number;
+  answers:           answers_Arena_gear[] | null;
+  AnswerExplanation: null;
+  type:              string;
+}
+
+export interface answers_Arena_gear {
+  A_text: string | number;
+}
+
+export interface Arena_updated_data {
   id: string;
   numOfPlayers: number;
   adminId: string;

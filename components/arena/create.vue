@@ -8,7 +8,7 @@ const showInsert = ref(false)
 const arenaId = computed(() => useArena.arenaId)
 
 
-const time = [30, 60, 90]
+const time = [30, 60, 90,120,300]
 // const selectTime = ref(time[0])
 
 const numPlayers = [1, 2, 3, 4, 5,]
