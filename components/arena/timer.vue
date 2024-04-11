@@ -80,10 +80,20 @@ const remainingPathColor = computed(() => {
   }
 });
 
+const toast = useToast()
+const emit = defineEmits(['timeOut'])
+
+
 watch(timeLeft_computed, (newValue) => {
   if (newValue === 0) {
     onTimesUp();
     timeString.value = 'TIME ENDED!'
+    toast.add({
+      title:`no one answer the question `
+    })
+    setTimeout(()=>{
+    emit('timeOut')
+    },2000)
   }
 });
 

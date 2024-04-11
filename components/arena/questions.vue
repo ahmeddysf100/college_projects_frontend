@@ -45,16 +45,16 @@ const useArena = useArenaStore()
 //   "type": "multiple"
 // })
 
-const prop = defineProps(['nominate'])
-const nominate = prop.nominate
+const emit = defineEmits(['nominate'])
 
 const submit = () => {
-  const data ={
+  const data = {
     Q_id: item.value.id,
     text: userAnswer.value?.toLocaleLowerCase()
   }
-  console.log('submit',data)
-  nominate(data)
+  console.log('emit/question', data)
+  // nominate(data)
+  emit('nominate', data)
 }
 
 
@@ -71,7 +71,7 @@ const getImage = async (url: string) => {
     await useDash.getImageByName(url);
     blobArray.value.push({ Q_imageUrl: url, blob: useDash.image as any });
   } catch (error) {
-    console.log(error);
+    console.log('getImage', error);
   }
 };
 
@@ -83,7 +83,7 @@ function getBlobUrl(url: string): string {
 const isSelected = (index2: any, item: any) => {
   return userAnswer.value === item.answers[index2].A_text;
 }
-const item = computed(() => useArena.arena_updated_gear as Arena_updated_gear ) 
+const item = computed(() => useArena.arena_updated_gear as Arena_updated_gear)
 
 watch(item, async (newValue) => {
   if (newValue?.Q_imageUrl) {
@@ -97,8 +97,9 @@ onMounted(async () => {
   }
   const targetElement = document.getElementById('scrolltarget');
   if (targetElement) {
+    console.log('aaaaa',targetElement)
     await nextTick()
-    const scrollPosition = targetElement.offsetTop - 58;
+    const scrollPosition = targetElement.offsetTop - 83;
     window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
   }
 })
@@ -113,7 +114,7 @@ onMounted(async () => {
       <h1>q</h1>
       <img v-if="item.Q_imageUrl && blobArray" id="scrolltarget" class=" h-[550px] rounded-lg"
         :src="getBlobUrl(item.Q_imageUrl)" :alt="`img ${item.Q_imageUrl} index in array q`">
-      <h1 v-else="item.Q_text" class="font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+      <h1 v-else="item.Q_text" id="scrolltarget" class="font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
       <UFormGroup label="Enter answer" class="mt-4" required>
         <UInput v-model="userAnswer" color="primary" variant="outline" placeholder="Your answer..." />
@@ -122,8 +123,8 @@ onMounted(async () => {
 
     <div v-if="item.type === 'multiple'">
       <h1>q</h1>
-      <img v-if="item.Q_imageUrl" :src="getBlobUrl(item.Q_imageUrl)" :alt="`img ${item.Q_imageUrl} index in array q`">
-      <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+      <img v-if="item.Q_imageUrl && blobArray" id="scrolltarget" :src="getBlobUrl(item.Q_imageUrl)" :alt="`img ${item.Q_imageUrl} index in array q`">
+      <h1 v-else="item.Q_text" id="scrolltarget" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
       <div v-for="(i, index2) in item.answers" :key="i.A_text"
         :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',
@@ -137,8 +138,8 @@ onMounted(async () => {
     </div>
   </div>
   <div class="grid">
-      <UButton @click="submit" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
-    </div>
+    <UButton @click="submit" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
+  </div>
 </template>
 
 <style>

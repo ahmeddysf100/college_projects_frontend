@@ -68,6 +68,7 @@ export interface Arena_updated_data {
   roundTime: number;
   participants: any[];
   nominations: any;
+  un_Solved_Quseions: any[];
   rankings: any[];
   results: any[];
   totalStages: number;

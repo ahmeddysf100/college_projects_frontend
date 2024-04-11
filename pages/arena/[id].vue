@@ -10,15 +10,16 @@ const toast = useToast()
 const token = useCookie('userArenaToken')
 const adminId = useCookie('adminArenaId')
 const arena = ref<Arena_updated_data | null>(null); // Initialize as null
-const gear = ref<Arena_updated_gear | string | null>(null); // Initialize as null
+const gear = ref<Arena_updated_gear | string>(); // Initialize as null
+const showGear = ref<boolean>(false)
 
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
 
 
 
-// const rank = computed(() => arena.value?.rankings)
-const rank = ref<Ranks[]>([{ "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 }, { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 }, { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 }, { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 }, { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 }, { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
+const rank = computed(() => arena.value?.rankings)
+// const rank = ref<Ranks[]>([{ "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 }, { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 }, { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 }, { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 }, { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 }, { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
 
 
 
@@ -31,6 +32,11 @@ const socket = io('ws://192.168.31.170:3333/arena', {
   }
 
 });
+
+
+const start_time = ref(3)
+const isOpen = ref()
+
 
 onMounted(() => {
 
@@ -69,16 +75,31 @@ onMounted(() => {
     })
     useArena.arena_updated_data = data.arenaData
   });
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-  const targetElement = document.getElementById('scrolltarget');
-  if (targetElement) {
-    targetElement.scrollIntoView({ behavior: 'smooth' });
-  }
-
 })
+const question = computed(() => useArena.arena_updated_gear as Arena_updated_gear)
+const start_count = ref()
+
+watch(question, async (newValue) => {
+  if (is_Stages_Finshed.value === false) {
+    start_time.value = 3
+    clearInterval(start_count.value)
+    showGear.value = false;
+    isOpen.value = true
+
+    start_count.value = setInterval(() => {
+      start_time.value--
+      if (start_time.value <= 0) {
+        isOpen.value = false
+        showGear.value = true;
+        clearInterval(start_count.value)
+      }
+    }, 1500)
+
+  }
+});
 
 const startArena = () => {
   socket.emit('start_arena', (data: any) => {
@@ -86,7 +107,26 @@ const startArena = () => {
   })
 }
 
+const currentStage = computed(() => arena.value?.currentStage)
+const totaltStage = computed(() => arena.value?.totalStages)
+const time_out = () => {
+  console.log('time_outttttttttt')
+  socket.emit('time_out', {
+    Q_id: gear.value?.id,
+    currentStage: currentStage.value
+  })
+}
+
+const is_Stages_Finshed = computed(() => {
+  if (currentStage.value >= totaltStage.value) {
+    return true
+  } else {
+    return false
+  }
+})
+
 const nominate = (data: any) => {
+  console.log('emit/id', data)
   socket.emit('nominate', {
     Q_id: data.Q_id,
     text: data.text
@@ -133,7 +173,19 @@ const toClipBoard = () => {
 </script>
 
 <template>
-  <div class="">
+  
+  <div v-if="is_Stages_Finshed === true">
+    <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
+    {{ is_Stages_Finshed }}
+    {{ currentStage }}
+  </div>
+  
+  <div v-else-if="is_Stages_Finshed === false" class="">
+    <UModal v-model="isOpen">
+      <div class="countdown">{{ start_time }}</div>
+      <button @click=""></button>
+  
+    </UModal>
 
     <div class="flex flex-row my-4 mx-4 gap-4 ">
       <div class=" basis-1/4  ">
@@ -156,7 +208,7 @@ const toClipBoard = () => {
           <!-- <template class="" #header>
             <p class="text-center font-bold text-2xl">leader board</p>
           </template> -->
-          <ArenaTimer v-if="gear" />
+          <ArenaTimer v-if="showGear" @timeOut="time_out" />
 
           <div v-else class="flex items-center space-x-4">
             <div class="space-y-2">
@@ -173,7 +225,7 @@ const toClipBoard = () => {
           <template class="" #header>
             <p class="text-center font-bold text-2xl">leader board</p>
           </template>
-          <ArenaQuestions v-if="gear" id="scrolltarget" :nominate="nominate"/>
+          <ArenaQuestions v-if="showGear" @nominate="nominate" />
 
           <div v-else class="flex items-center space-y-6">
             <div class="space-y-2">
@@ -240,8 +292,51 @@ const toClipBoard = () => {
 }
 
 
+/*//////////////start_count///////////// */
+.background2 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+}
+
+.background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 40%;
+  overflow: hidden;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
 
 
+
+.countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 5rem;
+  /* Adjust font size as needed */
+}
+
+
+
+
+
+
+/*/////////transition ////////////*/
 
 .list-move,
 /* apply transition to moving elements */
