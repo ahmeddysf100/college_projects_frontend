@@ -47,7 +47,9 @@ const useArena = useArenaStore()
 
 const emit = defineEmits(['nominate'])
 
+const loadingBtn = ref(false)
 const submit = () => {
+  loadingBtn.value = true
   const data = {
     Q_id: item.value.id,
     text: userAnswer.value?.toLocaleLowerCase()
@@ -86,6 +88,7 @@ const isSelected = (index2: any, item: any) => {
 const item = computed(() => useArena.arena_updated_gear as Arena_updated_gear)
 
 watch(item, async (newValue) => {
+  loadingBtn.value = false
   if (newValue?.Q_imageUrl) {
     await getImage(newValue.Q_imageUrl);
   }
@@ -97,7 +100,7 @@ onMounted(async () => {
   }
   const targetElement = document.getElementById('scrolltarget');
   if (targetElement) {
-    console.log('aaaaa',targetElement)
+    console.log('aaaaa', targetElement)
     await nextTick()
     const scrollPosition = targetElement.offsetTop - 83;
     window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
@@ -123,7 +126,8 @@ onMounted(async () => {
 
     <div v-if="item.type === 'multiple'">
       <h1>q</h1>
-      <img v-if="item.Q_imageUrl && blobArray" id="scrolltarget" :src="getBlobUrl(item.Q_imageUrl)" :alt="`img ${item.Q_imageUrl} index in array q`">
+      <img v-if="item.Q_imageUrl && blobArray" id="scrolltarget" :src="getBlobUrl(item.Q_imageUrl)"
+        :alt="`img ${item.Q_imageUrl} index in array q`">
       <h1 v-else="item.Q_text" id="scrolltarget" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
       <div v-for="(i, index2) in item.answers" :key="i.A_text"
@@ -138,7 +142,7 @@ onMounted(async () => {
     </div>
   </div>
   <div class="grid">
-    <UButton @click="submit" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
+    <UButton @click="submit" :loading="loadingBtn" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
   </div>
 </template>
 

@@ -7,8 +7,8 @@ const img = props.img + 1 as number
 const max = props.max as number
 const participants = props.participants as boolean
 // console.log(participants)
-const name = props.name as Ranks;
-// console.log(name)
+const name = computed(()=>props.name as Ranks);
+console.log('ana',name)
 const temp = 40 
 </script>
 

@@ -107,8 +107,8 @@ const startArena = () => {
   })
 }
 
-const currentStage = computed(() => arena.value?.currentStage)
-const totaltStage = computed(() => arena.value?.totalStages)
+const currentStage = computed(() => arena.value?.currentStage || 0)
+const totaltStage = computed(() => arena.value?.totalStages || 1)
 const time_out = () => {
   console.log('time_outttttttttt')
   socket.emit('time_out', {
@@ -187,7 +187,7 @@ const toClipBoard = () => {
   
     </UModal>
 
-    <div class="flex flex-row my-4 mx-4 gap-4 ">
+    <div class="flex flex-col sm:flex-row my-4 mx-4 gap-4 ">
       <div class=" basis-1/4  ">
         <UCard class=" "
           :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
@@ -211,8 +211,8 @@ const toClipBoard = () => {
           <ArenaTimer v-if="showGear" @timeOut="time_out" />
 
           <div v-else class="flex items-center space-x-4">
-            <div class="space-y-2">
-              <USkeleton class="h-[320px] w-[320px]" :ui="{ rounded: 'rounded-xl' }" />
+            <div class="space-y-2  w-full">
+              <USkeleton class="h-[320px] " :ui="{ rounded: 'rounded-xl' }" />
             </div>
           </div>
         </UCard>
@@ -221,16 +221,16 @@ const toClipBoard = () => {
 
       <div class="basis-1/2 ">
         <UCard
-          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-0 sm:py-0 sm:p-4' } }">
+          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
           <template class="" #header>
             <p class="text-center font-bold text-2xl">leader board</p>
           </template>
           <ArenaQuestions v-if="showGear" @nominate="nominate" />
 
-          <div v-else class="flex items-center space-y-6">
-            <div class="space-y-2">
-              <USkeleton class="h-[32rem] w-[41rem]" :ui="{ rounded: 'rounded-xl' }" />
-              <USkeleton class="h-[2rem] w-[41rem]" :ui="{ rounded: 'rounded-xl' }" />
+          <div v-else class="flex items-center space-x-4">
+            <div class="space-y-2 w-full">
+              <USkeleton class="h-[32rem] " :ui="{ rounded: 'rounded-xl' }" />
+              <USkeleton class="h-[2rem] " :ui="{ rounded: 'rounded-xl' }" />
             </div>
           </div>
         </UCard>
