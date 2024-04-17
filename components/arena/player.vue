@@ -8,7 +8,7 @@ const max = props.max as number
 const participants = props.participants as boolean
 // console.log(participants)
 const name = computed(()=>props.name as Ranks);
-console.log('ana',name)
+console.log('ana',name.value)
 const temp = 40 
 </script>
 

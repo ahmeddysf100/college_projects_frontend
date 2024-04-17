@@ -66,7 +66,7 @@ export interface Arena_updated_data {
   adminId: string;
   hasStarted: boolean;
   roundTime: number;
-  participants: any[];
+  participants: participant;
   nominations: any;
   un_Solved_Quseions: any[];
   rankings: any[];

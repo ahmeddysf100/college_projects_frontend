@@ -12,6 +12,7 @@ const adminId = useCookie('adminArenaId')
 const arena = ref<Arena_updated_data | null>(null); // Initialize as null
 const gear = ref<Arena_updated_gear | string>(); // Initialize as null
 const showGear = ref<boolean>(false)
+const offlinePlayers = ref<part[]>()
 
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
@@ -74,14 +75,25 @@ onMounted(() => {
       title: data.title
     })
     useArena.arena_updated_data = data.arenaData
+
+    const participantsArray = Object.values(arena.value?.participants || {});
+    const Offline = participantsArray.filter(i => i && i.isOnline === false);
+    offlinePlayers.value = Offline
+    console.log('ahmeeed', Offline);
+
   });
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 })
 const question = computed(() => useArena.arena_updated_gear as Arena_updated_gear)
 const start_count = ref()
 
+//when player rejoin the question will update
 watch(question, async (newValue) => {
   if (is_Stages_Finshed.value === false) {
     start_time.value = 3
@@ -100,6 +112,21 @@ watch(question, async (newValue) => {
 
   }
 });
+
+
+const offlineMode = ref(false);
+watch(arena, async (newValue) => {
+  if (newValue?.hasStarted === true && offlinePlayers.value?.length > 0 ) {
+    console.log('off off off', offlinePlayers.value)
+    offlineMode.value = true
+  }
+
+  if(newValue?.hasStarted === true && offlinePlayers.value?.length === 0  ) {
+    offlineMode.value = false
+    console.log('onn onn onn')
+
+  }
+})
 
 const startArena = () => {
   socket.emit('start_arena', (data: any) => {
@@ -173,102 +200,111 @@ const toClipBoard = () => {
 </script>
 
 <template>
-  
-  <div v-if="is_Stages_Finshed === true">
-    <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
-    {{ is_Stages_Finshed }}
-    {{ currentStage }}
-  </div>
-  
-  <div v-else-if="is_Stages_Finshed === false" class="">
-    <UModal v-model="isOpen">
-      <div class="countdown">{{ start_time }}</div>
-      <button @click=""></button>
-  
-    </UModal>
 
-    <div class="flex flex-col sm:flex-row my-4 mx-4 gap-4 ">
-      <div class=" basis-1/4  ">
-        <UCard class=" "
-          :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
-          <template class="" #header>
-            <p class="text-center font-bold text-2xl">leader board</p>
-          </template>
-          <label for="copy" class=" font-semibold mb-2">copy arena id</label>
-          <UButtonGroup id="copy" size="lg" orientation="horizontal">
-            <UInput class="text-center" v-model="rout.params.id" color="blue" variant="outline" readonly />
-            <UTooltip text="copy" :popper="{ placement: 'bottom' }">
-              <UButton @click="toClipBoard" color="blue" variant="outline" icon="i-heroicons-clipboard-document" />
-            </UTooltip>
-          </UButtonGroup>
-        </UCard>
+  <UModal v-model="offlineMode" prevent-close>
+    <div class="countdown">{{ offlinePlayers }}</div>
+    <button @click=""></button>
+  </UModal>
 
-        <UCard class="mt-4"
-          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
-          <!-- <template class="" #header>
+
+  <div v-if="offlineMode === false">
+
+    <div v-if="is_Stages_Finshed === true">
+      <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
+      {{ is_Stages_Finshed }}
+      {{ currentStage }}
+    </div>
+
+    <div v-else-if="is_Stages_Finshed === false" class="">
+
+      <UModal v-model="isOpen" prevent-close>
+        <div class="countdown">{{ start_time }}</div>
+        <button @click=""></button>
+      </UModal>
+
+      <div class="flex flex-col sm:flex-row my-4 mx-4 gap-4 ">
+        <div class=" basis-1/4  ">
+          <UCard class=" "
+            :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            <template class="" #header>
+              <p class="text-center font-bold text-2xl">leader board</p>
+            </template>
+            <label for="copy" class=" font-semibold mb-2">copy arena id</label>
+            <UButtonGroup id="copy" size="lg" orientation="horizontal">
+              <UInput class="text-center" v-model="rout.params.id" color="blue" variant="outline" readonly />
+              <UTooltip text="copy" :popper="{ placement: 'bottom' }">
+                <UButton @click="toClipBoard" color="blue" variant="outline" icon="i-heroicons-clipboard-document" />
+              </UTooltip>
+            </UButtonGroup>
+          </UCard>
+
+          <UCard class="mt-4"
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            <!-- <template class="" #header>
             <p class="text-center font-bold text-2xl">leader board</p>
           </template> -->
-          <ArenaTimer v-if="showGear" @timeOut="time_out" />
+            <ArenaTimer v-if="showGear" @timeOut="time_out" />
 
-          <div v-else class="flex items-center space-x-4">
-            <div class="space-y-2  w-full">
-              <USkeleton class="h-[320px] " :ui="{ rounded: 'rounded-xl' }" />
+            <div v-else class="flex items-center space-x-4">
+              <div class="space-y-2  w-full">
+                <USkeleton class="h-[320px] " :ui="{ rounded: 'rounded-xl' }" />
+              </div>
             </div>
-          </div>
-        </UCard>
-      </div>
+          </UCard>
+        </div>
 
 
-      <div class="basis-1/2 ">
-        <UCard
-          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
-          <template class="" #header>
-            <p class="text-center font-bold text-2xl">leader board</p>
-          </template>
-          <ArenaQuestions v-if="showGear" @nominate="nominate" />
+        <div class="basis-1/2 ">
+          <UCard
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
+            <template class="" #header>
+              <p class="text-center font-bold text-2xl">leader board</p>
+            </template>
+            <ArenaQuestions v-if="showGear" @nominate="nominate" />
 
-          <div v-else class="flex items-center space-x-4">
-            <div class="space-y-2 w-full">
-              <USkeleton class="h-[32rem] " :ui="{ rounded: 'rounded-xl' }" />
-              <USkeleton class="h-[2rem] " :ui="{ rounded: 'rounded-xl' }" />
+            <div v-else class="flex items-center space-x-4">
+              <div class="space-y-2 w-full">
+                <USkeleton class="h-[32rem] " :ui="{ rounded: 'rounded-xl' }" />
+                <USkeleton class="h-[2rem] " :ui="{ rounded: 'rounded-xl' }" />
+              </div>
             </div>
-          </div>
-        </UCard>
+          </UCard>
+        </div>
+
+
+        <div class="basis-1/4 ">
+          <UCard
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            <template class="" #header>
+              <p class="text-center font-bold text-2xl">leader board</p>
+            </template>
+            <div v-if="participants"
+              class="disable-scrollbars  flex flex-nowrap flex-col mx-auto mt-4 transition-container max-h-[10rem] hover:max-h-[28rem]  gap-4 overflow-y-scroll border-y-4 border-y-indigo-300 px-4 rounded-3xl">
+              <TransitionGroup name="list">
+                <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
+                  :max="arena?.totalStages" :participants="isOnline(item.userId)" />
+              </TransitionGroup>
+            </div>
+
+            <div v-else class="flex items-center space-x-4">
+              <USkeleton class="h-[14rem] w-[20rem]" />
+            </div>
+            <!-- <UButton label="shufle" @click="shufle" /> -->
+          </UCard>
+        </div>
+      </div>
+      <div class="grid">
+        <UButton @click="startArena" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
       </div>
 
 
-      <div class="basis-1/4 ">
-        <UCard
-          :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
-          <template class="" #header>
-            <p class="text-center font-bold text-2xl">leader board</p>
-          </template>
-          <div v-if="participants"
-            class="disable-scrollbars  flex flex-nowrap flex-col mx-auto mt-4 transition-container max-h-[10rem] hover:max-h-[28rem]  gap-4 overflow-y-scroll border-y-4 border-y-indigo-300 px-4 rounded-3xl">
-            <TransitionGroup name="list">
-              <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
-                :max="arena?.totalStages" :participants="isOnline(item.userId)" />
-            </TransitionGroup>
-          </div>
 
-          <div v-else class="flex items-center space-x-4">
-            <USkeleton class="h-[14rem] w-[20rem]" />
-          </div>
-          <!-- <UButton label="shufle" @click="shufle" /> -->
-        </UCard>
-      </div>
+      <h1 class="text-center mt-10 text-red-500">{{ rout.params.id }}</h1>
+      <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
+      <p>{{ arena }}</p>
+      <h1 class=" truncate">{{ token }}</h1>
+      <code>{{ rank }}</code>
     </div>
-    <div class="grid">
-      <UButton @click="startArena" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
-    </div>
-
-
-
-    <h1 class="text-center mt-10 text-red-500">{{ rout.params.id }}</h1>
-    <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
-    <p>{{ arena }}</p>
-    <h1 class=" truncate">{{ token }}</h1>
-    <code>{{ rank }}</code>
   </div>
 </template>
 

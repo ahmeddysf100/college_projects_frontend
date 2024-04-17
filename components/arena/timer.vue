@@ -13,8 +13,8 @@
     </svg>
     <div class="base-timer__label">{{ formattedTimeLeft }}
       <!-- <br> -->
-       <span class=" text-4xl font-semibold text-green-400" >{{ timeString }}</span> 
-      
+      <span class=" text-4xl font-semibold text-green-400">{{ timeString }}</span>
+
     </div>
   </div>
 </template>
@@ -24,7 +24,7 @@ const useArena = useArenaStore()
 
 const timeString = ref('GO!')
 const TIME_LIMIT = ref(useArena.arena_updated_data?.roundTime as number);
-console.log(TIME_LIMIT)
+console.log(TIME_LIMIT.value)
 const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = +(TIME_LIMIT.value / 2).toFixed();
 const ALERT_THRESHOLD = +(TIME_LIMIT.value / 4).toFixed();
@@ -89,17 +89,22 @@ watch(timeLeft_computed, (newValue) => {
     onTimesUp();
     timeString.value = 'TIME ENDED!'
     toast.add({
-      title:`no one answer the question `
+      title: `no one answer the question `
     })
-    setTimeout(()=>{
-    emit('timeOut')
-    },2000)
+    setTimeout(() => {
+      emit('timeOut')
+    }, 2000)
   }
 });
 
 onMounted(() => {
+
   startTimer();
 });
+
+onUnmounted(() => {
+  clearInterval(timerInterval.value);
+})
 
 const onTimesUp = () => {
   clearInterval(timerInterval.value);
