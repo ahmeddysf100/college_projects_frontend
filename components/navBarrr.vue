@@ -137,7 +137,7 @@ const showTimer = computed(() => useQuiz.timerPosition === 'nav' ? useQuiz.showT
           </li>
         </ul>
       </nav>
-      <QuizQuestion v-if="showTimer === true" />
+      <QuizTimer v-if="showTimer === true" />
     </div>
   </ClientOnly>
 </template>

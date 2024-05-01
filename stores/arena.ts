@@ -3,6 +3,7 @@ import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, aren
 import type { CreateArena } from "~/createArena";
 
 export const useArenaStore = defineStore("arena", () => {
+  const ip = useRuntimeConfig().public.IP_HOME;
   const useUser = useUserStore();
   const useModel = useMyModalErrorStore();
   const toast = useToast();
@@ -32,7 +33,7 @@ export const useArenaStore = defineStore("arena", () => {
       set_admin_arena_id();
       setArena();
       const req = await $fetch<CreateArena>(
-        "http://192.168.31.170:3333/arena",
+        `http://${ip}:3333/arena`,
         {
           method: "POST",
           body: data,
@@ -69,7 +70,7 @@ export const useArenaStore = defineStore("arena", () => {
       set_user_arena_token();
       setArena();
       const req = await $fetch<CreateArena>(
-        "http://192.168.31.170:3333/arena/join",
+        `http://${ip}:3333/arena/join`,
         {
           method: "POST",
           body: data,

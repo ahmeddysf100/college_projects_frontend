@@ -2,6 +2,7 @@
 import type { joinArenaDto } from "~/createArena";
 const useUser = useUserStore()
 const useArena = useArenaStore()
+const ip = useRuntimeConfig().public.IP_HOME;
 
 const arenaId = computed(() => useArena.arenaId)
 const joinArenaData = reactive<joinArenaDto>({
@@ -20,7 +21,7 @@ const joinArena = async () => {
 
   if (!!useArena.user_arena_token) { //if arena access token STORED go to arena
     console.log(useArena.arenaData)
-    navigateTo(`http://192.168.31.170:3000/arena/${arenaId.value}`, { external: true, replace: true })
+    navigateTo(`http://${ip}:3000/arena/${arenaId.value}`, { external: true, replace: true })
   }
 }
 </script>

@@ -1,8 +1,11 @@
+import { config } from "floating-vue/dist/config";
 import { defineStore } from "pinia";
 import type { Signup, User, jwt, login } from "~/types";
 
 export const useUserStore = defineStore("user", () => {
   const useModel = useMyModalErrorStore();
+  const ip = useRuntimeConfig().public.IP_HOME;
+  const toas = useToast();
   const user = ref<User>();
   const userId = useCookie("userId", {
     maxAge: 86400, //1d
@@ -21,7 +24,7 @@ export const useUserStore = defineStore("user", () => {
   const signup = async (data: Signup) => {
     console.table(data);
     try {
-      const res = await $fetch<any>("http://192.168.31.170:3333/users/create", {
+      const res = await $fetch<any>(`http://${ip}:3333/users/create`, {
         method: "post",
         body: data,
       });
@@ -46,7 +49,7 @@ export const useUserStore = defineStore("user", () => {
   const login = async (data: login) => {
     console.log(data);
     try {
-      const res = await $fetch<jwt>("http://192.168.31.170:3333/auth/login", {
+      const res = await $fetch<jwt>(`http://${ip}:3333/auth/login`, {
         method: "POST",
         body: data,
       });
@@ -61,11 +64,17 @@ export const useUserStore = defineStore("user", () => {
       } else {
         // HTTP request failed
         console.log("Login failed");
+        toas.add({
+          title: `${res}`
+        })
         setToken();
         setUser();
         setApiErrors("Login failed");
       }
     } catch (error: any) {
+      toas.add({
+        title: `${error.response._data.message}`
+      })
       // Other errors (e.g., network issues)
       console.log(error);
       setToken();
@@ -95,7 +104,7 @@ export const useUserStore = defineStore("user", () => {
     if (token.value) {
       try {
         const res = await $fetch<User>(
-          `http://192.168.31.170:3333/users/${userId.value}`,
+          `http://${ip}:3333/users/${userId.value}`,
           {
             headers: {
               Authorization: `Bearer ${token.value}`,

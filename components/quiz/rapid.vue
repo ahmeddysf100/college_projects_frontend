@@ -36,11 +36,11 @@ const btnType = ref('button')
 const startQuiz = async () => {
   rapidData.difficulty = selected.value.id
   if (selected.value.id === '1') {
-    useQuiz.setTime(10)
-  } else if (selected.value.id === '2') {
     useQuiz.setTime(30)
+  } else if (selected.value.id === '2') {
+    useQuiz.setTime(60)
   } else if (selected.value.id === '3') {
-    useQuiz.setTime(15)
+    useQuiz.setTime(120)
   }
 
   // console.log(rapidData)
@@ -213,12 +213,29 @@ const isSelected = (index: any, index2: any, item: any) => {
   return userAnswer.value[index] === item.answers[index2].A_text;
 }
 
+// watch(
+//   () => rawData.value,
+//   async () => {
+//     await scrollToElement();
+//   }
+// );
+
+// async function scrollToElement() {
+//   await nextTick();
+//   const targetElement = document.getElementById('xxx');
+//   if (targetElement) {
+//     console.log('aaaaa', targetElement);
+//     const scrollPosition = targetElement.offsetTop;
+//     window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+//   }
+// }
 
 
-
-onUnmounted(() => {
+onUnmounted(async () => {
   // unmount/reset timer when user change quiz mode 
   useQuiz.showTimer = false
+
+
 })
 </script>
 
@@ -249,15 +266,15 @@ onUnmounted(() => {
       <UForm @submit="handleSubmit">
         <div v-for="(item, index) in rawData" :key="item.id">
           <div v-if="index === questionOrder" v-motion :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
-            :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
-            <QuizQuestion />
+            :visible-once="{ opacity: 1, x: 0, transition: { duration: 250 } }">
+            <QuizTimer id="xxx" />
 
 
             <div v-if="item.correctAnswer" class=" border-4 grid justify-center mb-4">
               <h1>{{ index }}</h1>
-              <img v-if="item.Q_imageUrl" class="" :src="blob[index]"
+              <img v-if="item.Q_imageUrl" class=" rounded-lg" id="scrolltarget" :src="blob[index]"
                 :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+              <h1 v-else="item.Q_text" id="scrolltarget" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
               <UFormGroup label="Enter answer" class="mt-4" required>
                 <UInput v-model="userAnswer[index]" color="primary" variant="outline" placeholder="Your answer..." />
@@ -266,11 +283,11 @@ onUnmounted(() => {
             </div>
 
 
-            <div v-else="item.answers" class=" border-4 grid justify-center my-16 py-6">
+            <div v-else="item.answers" class=" border-4 grid justify-center  py-6">
               <h1>{{ index }}</h1>
-              <img v-if="item.Q_imageUrl" class="" :src="blob[index]"
+              <img v-if="item.Q_imageUrl" id="scrolltarget" class=" rounded-lg" :src="blob[index]"
                 :alt="`img ${item.Q_imageUrl} index in array ${index}`">
-              <h1 v-else="item.Q_text" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
+              <h1 v-else="item.Q_text" id="scrolltarget" class=" font-bold text-xl tracking-wide">{{ item.Q_text }}</h1>
 
               <div v-for="(i, index2) in item.answers" :key="i.id"
                 :class="['flex', 'justify-start', 'gap-4', 'rounded-full', 'm-4', 'hover:bg-gradient-to-r hover:from-[#86f4b4] hover:to-[#93cbf1] ',

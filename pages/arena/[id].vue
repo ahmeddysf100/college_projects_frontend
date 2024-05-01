@@ -6,6 +6,7 @@ const useUser = useUserStore()
 const useArena = useArenaStore()
 const rout = useRoute();
 const toast = useToast()
+const ip = useRuntimeConfig().public.IP_HOME;
 
 const token = useCookie('userArenaToken')
 const adminId = useCookie('adminArenaId')
@@ -24,7 +25,7 @@ const rank = computed(() => arena.value?.rankings)
 
 
 
-const socket = io('ws://192.168.31.170:3333/arena', {
+const socket = io(`ws://${ip}:3333/arena`, {
   // withCredentials:true,
   // extraHeaders: headers,
   autoConnect: false,
@@ -116,16 +117,30 @@ watch(question, async (newValue) => {
 
 const offlineMode = ref(false);
 watch(arena, async (newValue) => {
-  if (newValue?.hasStarted === true && offlinePlayers.value?.length > 0 ) {
+  // if (newValue?.hasStarted === true && offlinePlayers.value?.length > 0 ) {
+  //   console.log('off off off', offlinePlayers.value)
+  //   offlineMode.value = true
+  // }
+
+  // if(newValue?.hasStarted === true && offlinePlayers.value?.length === 0  ) {
+  //   offlineMode.value = false
+  //   console.log('onn onn onn')
+
+  // }
+
+
+  //(offlinePlayers.value?.length ?? 0) checks if offlinePlayers.value is undefined. If it is, it uses 0 as the default value for the length property.
+  //This ensures that even if offlinePlayers.value is undefined, the expression (offlinePlayers.value?.length ?? 0) will always result in a number, preventing the TypeScript warning.
+  if (newValue?.hasStarted === true && (offlinePlayers.value?.length ?? 0) > 0) {
     console.log('off off off', offlinePlayers.value)
-    offlineMode.value = true
+    offlineMode.value = true;
   }
 
-  if(newValue?.hasStarted === true && offlinePlayers.value?.length === 0  ) {
-    offlineMode.value = false
-    console.log('onn onn onn')
-
+  if (newValue?.hasStarted === true && (offlinePlayers.value?.length ?? 0) === 0) {
+    offlineMode.value = false;
+    console.log('onn onn onn');
   }
+
 })
 
 const startArena = () => {

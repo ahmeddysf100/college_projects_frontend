@@ -6,6 +6,7 @@ const useUser = useUserStore()
 const useArena = useArenaStore()
 const showInsert = ref(false)
 const arenaId = computed(() => useArena.arenaId)
+const ip = useRuntimeConfig().public.IP_HOME;
 
 
 const time = [30, 60, 90,120,300]
@@ -34,7 +35,7 @@ const x = async () => {
   await useArena.createArena(createArena)
   if (!!useArena.admin_arena_id) { //if adminId STORED go to arena
     console.log(useArena.admin_arena_id)
-    navigateTo(`http://192.168.31.170:3000/arena/${arenaId.value}`, { external: true, replace: true })
+    navigateTo(`http://${ip}:3000/arena/${arenaId.value}`, { external: true, replace: true })
   }
 }
 </script>
@@ -54,6 +55,8 @@ const x = async () => {
     </div>
     <board :showInsert="showInsert" />
     <UButton @click="x" class=" grid mx-auto w-3/12 mb-4" size="xl" label="Create Arena" />
+    <!-- <a href="https://storyset.com/people">People illustrations by Storyset</a>
+    <img src="/public/Webinar-pana.svg" alt=""> -->
   </div>
 </template>
 

@@ -34,7 +34,7 @@ const rawData = ref()
 const startQuiz = async () => {
   randomData.difficulty = selected.value.id
   if (selected.value.id === '1') {
-    useQuiz.setTime(9000)
+    useQuiz.setTime(1000)
   } else if (selected.value.id === '2') {
     useQuiz.setTime(600)
   } else if (selected.value.id === '3') {

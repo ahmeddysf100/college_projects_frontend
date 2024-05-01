@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 export const useDashboardStore = defineStore("dashboard", () => {
   const useStore = useUserStore();
   const useModel = useMyModalErrorStore();
+  const ip = useRuntimeConfig().public.IP_HOME;
+
 
   const dataTable = ref();
   const apiErrors = ref();
@@ -33,7 +35,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   async function getAllQuestions() {
     try {
       const res = await $fetch<any>(
-        "http://192.168.31.170:3333/storage/questions"
+        `http://${ip}:3333/storage/questions`
       );
       setDataTable(res);
     } catch (error) {
@@ -46,7 +48,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     try {
       // console.log(token)
       const res = await $fetch<any>(
-        "http://192.168.31.170:3333/storage/question",
+        `http://${ip}:3333/storage/question`,
         {
           method: "POST",
           body: data,
@@ -75,7 +77,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     // console.table({data: data , token: token})
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/storage/getImage/${data}`,
+        `http://${ip}:3333/storage/getImage/${data}`,
         {
           headers: {
             Authorization: `Bearer ${useStore.token}`,
@@ -97,7 +99,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setQuestionById();
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/storage/getOneQuesion/${data}`,
+        `http://${ip}:3333/storage/getOneQuesion/${data}`,
         {
           headers: {
             Authorization: `Bearer ${useStore.token}`,
@@ -119,7 +121,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     await setD_question();
     try {
       const res = await $fetch<any>(
-        `http://192.168.31.170:3333/storage/${data}`,
+        `http://${ip}:3333/storage/${data}`,
         {
           method: "DELETE",
           headers: {
