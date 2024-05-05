@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { progress } from '@nuxt/ui';
 
 
 
@@ -41,7 +40,6 @@ onMounted(() => {
     temp.value--;
     progress.value = (temp.value/max.value)*100
   }, 1000)
-
 
 
 })

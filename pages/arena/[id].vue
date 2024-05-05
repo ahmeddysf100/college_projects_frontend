@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { io } from "socket.io-client";
 import { Clipboard } from "v-clipboard";
-import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, part, participant, Ranks } from "~/createArena";
+import type { Arena, OfflinePlayers, Arena_updated, Arena_updated_data, Arena_updated_gear, part, participant, Ranks } from "~/createArena";
 const useUser = useUserStore()
 const useArena = useArenaStore()
 const rout = useRoute();
@@ -13,7 +13,7 @@ const adminId = useCookie('adminArenaId')
 const arena = ref<Arena_updated_data | null>(null); // Initialize as null
 const gear = ref<Arena_updated_gear | string>(); // Initialize as null
 const showGear = ref<boolean>(false)
-const offlinePlayers = ref<part[]>()
+const offlinePlayers = ref<OfflinePlayers[]>()
 
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
@@ -37,7 +37,7 @@ const socket = io(`ws://${ip}:3333/arena`, {
 
 
 const start_time = ref(3)
-const isOpen = ref()
+const isOpen = ref<boolean>()
 
 
 onMounted(() => {
@@ -77,11 +77,34 @@ onMounted(() => {
     })
     useArena.arena_updated_data = data.arenaData
 
-    const participantsArray = Object.values(arena.value?.participants || {});
-    const Offline = participantsArray.filter(i => i && i.isOnline === false);
-    offlinePlayers.value = Offline
-    console.log('ahmeeed', Offline);
+    // const participantsArray = Object.values(arena.value?.participants || {});
+    // const Offline = participantsArray.filter(i => i && i.isOnline === false);
+    // offlinePlayers.value = Offline
+    // console.log('offline players', Offline);
 
+    offlinePlayers.value = Object.keys(arena.value.participants).filter(id => !arena.value?.participants[id].isOnline).map(id => ({ id, name: arena.value?.participants[id].name }));
+    //      offlinePlayers.value = [
+    //   { "id": "nCzQxk3LY938ETKWNpXHp", "name": "student" },
+    //   { "id": "vYRpN85AGpZu4MzBEG4uH", "name": "teacher" },
+    //   { "id": "Z7fKgEa6JTBWwL98aDr4T", "name": "parent" },
+    //   { "id": "Rn6D4MzHk3XhLTuPNZ8aY", "name": "manager" },
+    //   { "id": "C92B3hNz6LmETWxkqXPHp", "name": "engineer" },
+    //   { "id": "aYDz6jWQpNcXLK3mTP89H", "name": "artist" },
+    //   { "id": "8ZxL3HmNcpWQjY4TPK7Ba", "name": "developer" },
+    //   { "id": "4X7YjN8cZa9pWQLTKm3bH", "name": "designer" },
+    //   { "id": "nTj8bH3cW9mKXLYZaPp4Q", "name": "writer" },
+    //   { "id": "cYjWmK3LNpQaT9H4Z8Xb7", "name": "scientist" },
+    //   { "id": "L3ZKNxTpXbWmYc9PH4a7j", "name": "doctor" },
+    //   { "id": "N6ZcLYpQ3HWmTXbKa8j9d", "name": "nurse" },
+    //   { "id": "K4LWQmN3THXbpcZjY7a9d", "name": "pilot" },
+    //   { "id": "qNcXK3WpHmLTZ8aYPb94j", "name": "chef" },
+    //   { "id": "jWpLN4cTQKXb9aPmHY3Z8", "name": "athlete" },
+    //   { "id": "pN3cY4KW9LXbqTHm8HaZj", "name": "musician" },
+    //   { "id": "H4LYj3Xb9aKWmPQTLcZN8", "name": "actor" },
+    //   { "id": "T9pNcYmLWjHXb4Q3K7Za8", "name": "dancer" },
+    //   { "id": "mW3LXbHKc9NjZaP8Qp7T4", "name": "architect" },
+    //   { "id": "N3mKcZp8WYjTXbLaHP94q", "name": "entrepreneur" }
+    // ];
   });
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,12 +114,15 @@ onMounted(() => {
 
 
 })
-const question = computed(() => useArena.arena_updated_gear as Arena_updated_gear)
+type ArenaUpdatedGearOrString = Arena_updated_gear | string | null;
+
+const question = computed(() => useArena.arena_updated_gear as ArenaUpdatedGearOrString)
 const start_count = ref()
+const is_Stages_Finshed = ref(false)
 
 //when player rejoin the question will update
 watch(question, async (newValue) => {
-  if (is_Stages_Finshed.value === false) {
+  if (newValue !== 'FINSHED') {
     start_time.value = 3
     clearInterval(start_count.value)
     showGear.value = false;
@@ -111,23 +137,14 @@ watch(question, async (newValue) => {
       }
     }, 1500)
 
+  } else if (newValue === 'FINSHED') {
+    is_Stages_Finshed.value = true;
   }
 });
 
 
 const offlineMode = ref(false);
 watch(arena, async (newValue) => {
-  // if (newValue?.hasStarted === true && offlinePlayers.value?.length > 0 ) {
-  //   console.log('off off off', offlinePlayers.value)
-  //   offlineMode.value = true
-  // }
-
-  // if(newValue?.hasStarted === true && offlinePlayers.value?.length === 0  ) {
-  //   offlineMode.value = false
-  //   console.log('onn onn onn')
-
-  // }
-
 
   //(offlinePlayers.value?.length ?? 0) checks if offlinePlayers.value is undefined. If it is, it uses 0 as the default value for the length property.
   //This ensures that even if offlinePlayers.value is undefined, the expression (offlinePlayers.value?.length ?? 0) will always result in a number, preventing the TypeScript warning.
@@ -159,19 +176,20 @@ const time_out = () => {
   })
 }
 
-const is_Stages_Finshed = computed(() => {
-  if (currentStage.value >= totaltStage.value) {
-    return true
-  } else {
-    return false
-  }
-})
 
 const nominate = (data: any) => {
   console.log('emit/id', data)
   socket.emit('nominate', {
     Q_id: data.Q_id,
     text: data.text
+  })
+}
+
+const remove_participant = (x: any) => {
+  console.log(`remove_participant: ${x.name}`)
+  socket.emit('remove_participant', {
+    id: x.id,
+    name: x.name
   })
 }
 
@@ -212,17 +230,34 @@ const toClipBoard = () => {
     })
   }
 }
+
+const show_countTime = computed(() => {
+  if (isOpen.value === true && offlineMode.value === false) {
+    return true
+  } else {
+    return false
+  }
+})
 </script>
 
 <template>
 
-  <UModal v-model="offlineMode" prevent-close>
-    <div class="countdown">{{ offlinePlayers }}</div>
-    <button @click=""></button>
+  <UModal v-model="offlineMode" :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" fullscreen>
+    <div class=" mt-40 grid place-content-center">
+      <h1 class="font-extrabold text-pretty text-3xl text-center">Waiting for players to return. Only the admin can kick
+        offline
+        players
+      </h1>
+      <div class="loader my-8 mx-auto "></div>
+      <div class="centerDevXY flex flex-wrap justify-center ">
+        <ArenaWaitForPlayers v-for="(item, index) in offlinePlayers" :key="index"
+          @remove_participant="remove_participant" :offlinePlayer="item" />
+      </div>
+    </div>
   </UModal>
 
 
-  <div v-if="offlineMode === false">
+  <div>
 
     <div v-if="is_Stages_Finshed === true">
       <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
@@ -230,9 +265,10 @@ const toClipBoard = () => {
       {{ currentStage }}
     </div>
 
-    <div v-else-if="is_Stages_Finshed === false" class="">
+    <div v-else class="">
 
-      <UModal v-model="isOpen" prevent-close>
+      <UModal v-model="show_countTime" :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" prevent-close
+        fullscreen>
         <div class="countdown">{{ start_time }}</div>
         <button @click=""></button>
       </UModal>
@@ -240,7 +276,7 @@ const toClipBoard = () => {
       <div class="flex flex-col sm:flex-row my-4 mx-4 gap-4 ">
         <div class=" basis-1/4  ">
           <UCard class=" "
-            :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl' }">
             <template class="" #header>
               <p class="text-center font-bold text-2xl">leader board</p>
             </template>
@@ -254,11 +290,11 @@ const toClipBoard = () => {
           </UCard>
 
           <UCard class="mt-4"
-            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl' }">
             <!-- <template class="" #header>
             <p class="text-center font-bold text-2xl">leader board</p>
           </template> -->
-            <ArenaTimer v-if="showGear" @timeOut="time_out" />
+            <ArenaTimer v-if="showGear && offlineMode === false" @timeOut="time_out" />
 
             <div v-else class="flex items-center space-x-4">
               <div class="space-y-2  w-full">
@@ -271,11 +307,11 @@ const toClipBoard = () => {
 
         <div class="basis-1/2 ">
           <UCard
-            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
             <template class="" #header>
               <p class="text-center font-bold text-2xl">leader board</p>
             </template>
-            <ArenaQuestions v-if="showGear" @nominate="nominate" />
+            <ArenaQuestions v-if="showGear && offlineMode === false" @nominate="nominate" />
 
             <div v-else class="flex items-center space-x-4">
               <div class="space-y-2 w-full">
@@ -289,7 +325,7 @@ const toClipBoard = () => {
 
         <div class="basis-1/4 ">
           <UCard
-            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl shadow-gray-950 ' }, rounded: 'rounded-3xl' }">
+            :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl' }">
             <template class="" #header>
               <p class="text-center font-bold text-2xl">leader board</p>
             </template>
@@ -381,6 +417,62 @@ const toClipBoard = () => {
   font-size: 5rem;
   /* Adjust font size as needed */
 }
+
+/* loadeer */
+.loader {
+  position: relative;
+  transform: scale(2);
+  border-radius: 50%;
+  border: 1px solid;
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+
+.loader::after {
+  position: absolute;
+  width: 0px;
+  height: 10px;
+  display: block;
+  border-left: 1px solid #fff;
+  content: '';
+  left: 14px;
+  border-radius: 1px;
+  top: 4px;
+  animation-duration: 1s;
+}
+
+.loader::before {
+  position: absolute;
+  width: 0px;
+  height: 10px;
+  display: block;
+  border-left: 1px solid #fff;
+  content: '';
+  left: 14px;
+  border-radius: 1px;
+  top: 4px;
+  animation-duration: 40s;
+}
+
+.loader::before,
+.loader::after {
+  transform-origin: bottom;
+  animation-name: dial;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes dial {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 
 
 

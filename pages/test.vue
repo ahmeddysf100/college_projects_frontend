@@ -1,122 +1,52 @@
 <template>
-  <!-- <div class=" relative w-[500px] mt-4">
-    <svg :width="width" height="20">
-      <rect width="100%" height="100%" fill="#ddd" rx="5" ry="5" />
-      <rect :width="progress + '%'" height="100%" :fill="color" class="transition-all duration-1000 ease-linear" rx="5"
-        ry="5" />
-    </svg>
-    <div
-      :style="{ position: 'absolute', top: '-20px', left: progress + '%', transform: 'translateX(-50%)', transition: 'left 1s linear' }">
-      {{ Math.round(progress) }}%
-    </div>
-  </div> -->
-
-  <!-- <div class="m-6">
-   <svg width="400" height="20">
-     <rect  width="100%" height="100%" fill="#ddd" rx="15" ry="15" />
-     <rect class="smooth" :width="progress + '%'" height="100%" :fill="color" rx="15" ry="15" />
-   </svg>
- </div> -->
-
-
-  <div class="timer">
-    <div class="progress">
-      <div :style="{ width: progress + '%' }" class="progress-bar"></div>
-      <span class="progress-text">{{ temp }}</span>
-    </div>
+  <h1 class="font-extrabold text-pretty text-3xl text-center">Waiting for players to return. Only the admin can kick
+    offline
+    players...</h1>
+  <div class="centerDevXY flex flex-wrap justify-center">
+    <ArenaWaitForPlayers v-for="(item, index) in offlinePlayers" :key="index" @remove_participant="remove_participant"
+      :offlinePlayer="item" />
   </div>
 </template>
 
 
 <script setup lang="ts">
 
-const useQuiz = useMyQuizStore();
-const width = 500;
-const temp = ref(width);
-const totalDuration = ref(width);
-
-const timeRemaining = ref(totalDuration.value);
-const progress = ref(100);
-const color = ref('green');
-const countDownInterval = ref()
-onMounted(() => {
-  countDownInterval.value = setInterval(() => {
-    if (temp.value > 0) {
-      temp.value--;
-      progress.value = (temp.value / totalDuration.value) * 100;
-      updateColor();
-    } else {
-      clearInterval(countDownInterval.value);
-      useQuiz.startSubmit = true;
-      useQuiz.showTimer = false;
-    }
-  }, 1000);
-});
-
-onUnmounted(() => {
-  clearInterval(countDownInterval.value);
-});
-
-function updateColor() {
-  switch (true) {
-    case progress.value > 85: color.value = 'green'; break;
-    case progress.value > 65: color.value = 'lime'; break;
-    case progress.value > 45: color.value = 'yellow'; break;
-    case progress.value > 25: color.value = 'amber'; break;
-    case progress.value > 15: color.value = 'orange'; break;
-    default: color.value = 'red';
-  }
+const remove_participant = (x: any) => {
+  console.log(`remove_participant: ${x.name}`)
 }
+
+const offlinePlayers = ref([
+  { "id": "nCzQxk3LY938ETKWNpXHp", "name": "student" },
+  { "id": "vYRpN85AGpZu4MzBEG4uH", "name": "teacher" },
+  { "id": "Z7fKgEa6JTBWwL98aDr4T", "name": "parent" },
+  { "id": "Rn6D4MzHk3XhLTuPNZ8aY", "name": "manager" },
+  { "id": "C92B3hNz6LmETWxkqXPHp", "name": "engineer" },
+  { "id": "aYDz6jWQpNcXLK3mTP89H", "name": "artist" },
+  { "id": "8ZxL3HmNcpWQjY4TPK7Ba", "name": "developer" },
+  { "id": "4X7YjN8cZa9pWQLTKm3bH", "name": "designer" },
+  { "id": "nTj8bH3cW9mKXLYZaPp4Q", "name": "writer" },
+  { "id": "cYjWmK3LNpQaT9H4Z8Xb7", "name": "scientist" },
+  { "id": "L3ZKNxTpXbWmYc9PH4a7j", "name": "doctor" },
+  { "id": "N6ZcLYpQ3HWmTXbKa8j9d", "name": "nurse" },
+  { "id": "K4LWQmN3THXbpcZjY7a9d", "name": "pilot" },
+  { "id": "qNcXK3WpHmLTZ8aYPb94j", "name": "chef" },
+  { "id": "jWpLN4cTQKXb9aPmHY3Z8", "name": "athlete" },
+  { "id": "pN3cY4KW9LXbqTHm8HaZj", "name": "musician" },
+  { "id": "H4LYj3Xb9aKWmPQTLcZN8", "name": "actor" },
+  { "id": "T9pNcYmLWjHXb4Q3K7Za8", "name": "dancer" },
+  { "id": "mW3LXbHKc9NjZaP8Qp7T4", "name": "architect" },
+  { "id": "N3mKcZp8WYjTXbLaHP94q", "name": "entrepreneur" }
+]);
 </script>
 
 
 <style scoped>
-.smooth {
-  transition-property: all;
-  transition-timing-function: linear;
-  transition-duration: 1000ms;
-  overflow: hidden;
-  background: transparent;
-
-}
-
-
-.timer {
-  width: 100%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin-bottom: 30px;
-}
-
-.timer .progress {
-  position: relative;
-  width: 100%;
-  height: 40px;
-  background: transparent;
-  border-radius: 30px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  border: 3px solid #3f4868;
-}
-
-.timer .progress .progress-bar {
-  height: 100%;
-  border-radius: 30px;
-  overflow: hidden;
-  background: linear-gradient(to right, #ea517c, #b478f1);
-  transition: 1s cubic-bezier(0.4, 0, 0.6, 1);;
-}
-
-.timer .progress .progress-text {
-  position: absolute;
-  top: 50%;
+/* .centerDevXY { */
+/* position: absolute; */
+/* top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 500;
-}
+  transform: translate(-50%, -50%); */
+/* font-size: 5rem; */
+/* Adjust font size as needed */
+/* } */
 </style>

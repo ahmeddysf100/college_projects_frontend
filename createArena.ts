@@ -109,3 +109,9 @@ export interface Answer {
 }
 
 export interface Nominations {}
+
+
+export interface OfflinePlayers {
+  id: string;
+  name: string | undefined;
+}
