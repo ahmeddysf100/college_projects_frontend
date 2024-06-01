@@ -308,7 +308,7 @@ onUnmounted(() => {
       <UForm @submit="handleSubmit">
         <div v-for="(item, index) in rawData" :key="item.id" v-motion
           :initial="{ opacity: 0, x: index % 2 === 0 ? 100 : -100 }"
-          :visible="{ opacity: 1, x: 0, transition: { duration: 250 } }">
+          :visible-once="{ opacity: 1, x: 0, transition: { duration: 250 } }">
 
 
 

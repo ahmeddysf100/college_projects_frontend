@@ -101,7 +101,7 @@ const showTimer = computed(() => useQuiz.timerPosition === 'nav' ? useQuiz.showT
 
               <template #account>
                 <div class="text-left">
-                  <p>Signed in as</p>
+                  <p>Signed in as {{ useStore.user.username }}</p>
                   <p class="truncate font-medium text-gray-900 dark:text-white">
                     {{ useStore.user.email }}
                   </p>

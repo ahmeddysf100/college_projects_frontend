@@ -28,7 +28,7 @@ const clicked = (e: any) => {
   const text = e.target.innerText;
   console.log(text);
   switch (text) {
-    case 'random':
+    case 'standard':
       quiz.random = true;
       outlineRandom.value = 'text-green-500 dark:text-green-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-[#ace5af] selectedBTN';
       break;
@@ -57,7 +57,7 @@ const clicked = (e: any) => {
 
         <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineRandom"
           class=" animate-moving-gradient mb-4 transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-r from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-2  col-span-4">
-          random
+          standard
         </UButton>
 
         <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineRapid"

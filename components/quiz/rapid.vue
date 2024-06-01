@@ -21,6 +21,10 @@ const selectList_difficulty = [
 ]
 const selectList_time = [
   {
+    label: '10 seconds',
+    id: 10
+  },
+  {
     label: '30 seconds',
     id: 30
   },

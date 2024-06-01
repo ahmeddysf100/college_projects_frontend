@@ -104,14 +104,7 @@ async function handleFormSubmit_signup(event: FormSubmitEvent<SchemaSignup>) {
 
   await useStore.signup(loginData);
 
-  // if (useStore.user?.role === "admin") {
-  //   await navigateTo("/dashboard", { replace: true });
-  // }
 
-  // if (useStore.user?.role === "user") {
-  //   await navigateTo("/", { replace: true });
-  // }
-  // await navigateTo("/dashboard", { replace: true })
 }
 
 const tabIndex = ref(0);
