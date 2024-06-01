@@ -66,7 +66,7 @@ const addOption = () => {
       A_Text: tempOptions.value,
       isCorrect: selectBox.value.toString(),
     });
-    
+
     // Clear the entered option and reset selectBox value
     tempOptions.value = '';
     optionMessage.value = "";
@@ -103,6 +103,7 @@ function updateOptions(event) {
 const imageUrl1 = ref(null);
 function handleFileUpload1(event) {
   const file = event.target.files[0];
+  console.log('file',file)
 
   // If there's already an image1, delete it from the FormData
   if (formData.has("image1")) {
@@ -114,6 +115,7 @@ function handleFileUpload1(event) {
 
   // Update the imageUrl1 to display the new image
   imageUrl1.value = URL.createObjectURL(file);
+  console.log('imageurl1',imageUrl1)
 }
 
 const imageUrl2 = ref(null);
@@ -219,7 +221,7 @@ async function onDeletion() {
           </p>
         </template>
 
-        <form @submit="onSubmitinsert">
+        <form  @submit.prevent="onSubmitinsert">
           <UFormGroup label="Subject Name" name="subject_name" class="mb-3" required>
             <USelectMenu v-model="insertForm.subject_name" :options="selectSubject" />
           </UFormGroup>
@@ -301,7 +303,7 @@ async function onDeletion() {
           </UFormGroup>
 
           <UFormGroup label="Question image" name="image1" class="mb-3">
-            <UInput dir="auto" type="file" @change="handleFileUpload1" />
+            <input dir="auto" type="file" @change="handleFileUpload1" />
             <img v-if="imageUrl1" class="h-40 w-60 mx-auto my-10 sm:h-60 sm:w-80" :src="imageUrl1" />
           </UFormGroup>
 
@@ -310,7 +312,7 @@ async function onDeletion() {
           </UFormGroup>
 
           <UFormGroup label="Answer image" name="image2" class="mb-3">
-            <UInput dir="auto" type="file" @change="handleFileUpload2" />
+            <input dir="auto" type="file" @change="handleFileUpload2" />
             <img v-if="imageUrl2" class="h-40 w-60 mx-auto my-10 sm:h-60 sm:w-80" :src="imageUrl2" />
           </UFormGroup>
 

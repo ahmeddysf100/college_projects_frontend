@@ -20,7 +20,7 @@ const participants = computed(() => arena.value?.participants); // Use computed 
 
 
 
-const rank = computed(() => arena.value?.rankings)
+const ranks = computed(() => arena.value?.rankings)
 // const rank = ref<Ranks[]>([{ "name": "ahha1", "userId": "sx3ku2ZIVEkHcxlcBa0w81", "rank": 1 }, { "name": "ahha2", "userId": "sx3ku2ZIVEkHcxlcBa0w82", "rank": 2 }, { "name": "ahha3", "userId": "sx3ku2ZIVEkHcxlcBa0w83", "rank": 3 }, { "name": "ahha4", "userId": "sx3ku2ZIVEkHcxlcBa0w84", "rank": 3 }, { "name": "ahha5", "userId": "sx3ku2ZIVEkHcxlcBa0w85", "rank": 4 }, { "name": "ahha6", "userId": "sx3ku2ZIVEkHcxlcBa0w86", "rank": 2 },])
 
 
@@ -31,7 +31,8 @@ const socket = io(`ws://${ip}:3333/arena`, {
   autoConnect: false,
   auth: {
     token: token.value,
-  }
+  },
+  transports:['websocket'], 
 
 });
 
@@ -152,7 +153,8 @@ watch(arena, async (newValue) => {
     console.log('off off off', offlinePlayers.value)
     offlineMode.value = true;
   }
-
+  //This is essentially the same behavior as the logical OR (||) operator in this context,
+  // However, the nullish coalescing operator (??) is specifically designed to handle null and undefined values, whereas the logical OR (||) operator would also evaluate to the right-hand operand if the left-hand operand is a falsy value such as 0, "", NaN, or false.
   if (newValue?.hasStarted === true && (offlinePlayers.value?.length ?? 0) === 0) {
     offlineMode.value = false;
     console.log('onn onn onn');
@@ -242,7 +244,9 @@ const show_countTime = computed(() => {
 
 <template>
 
-  <UModal v-model="offlineMode" :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" fullscreen>
+<div v-if="is_Stages_Finshed === false">
+  <UModal v-model="offlineMode"
+    :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" fullscreen>
     <div class=" mt-40 grid place-content-center">
       <h1 class="font-extrabold text-pretty text-3xl text-center">Waiting for players to return. Only the admin can kick
         offline
@@ -255,14 +259,16 @@ const show_countTime = computed(() => {
       </div>
     </div>
   </UModal>
+</div>
 
 
   <div>
 
     <div v-if="is_Stages_Finshed === true">
-      <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
+      <ArenaResults :max="arena?.totalStages" :players="ranks" />
+      <!-- <USkeleton class="h-svh w-svw" :ui="{ rounded: 'rounded-xl' }" />
       {{ is_Stages_Finshed }}
-      {{ currentStage }}
+      {{ currentStage }} -->
     </div>
 
     <div v-else class="">
@@ -278,7 +284,7 @@ const show_countTime = computed(() => {
           <UCard class=" "
             :ui="{ body: { base: ' grid place-content-center' }, header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl' }">
             <template class="" #header>
-              <p class="text-center font-bold text-2xl">leader board</p>
+              <p class="text-center font-bold text-2xl">Game details</p>
             </template>
             <label for="copy" class=" font-semibold mb-2">copy arena id</label>
             <UButtonGroup id="copy" size="lg" orientation="horizontal">
@@ -309,7 +315,7 @@ const show_countTime = computed(() => {
           <UCard
             :ui="{ header: { background: 'bg-cyan-500 rounded-t-3xl shadow-xl dark:shadow-gray-950  shadow-gray-300 ' }, rounded: 'rounded-3xl', body: { padding: 'p-4  ' } }">
             <template class="" #header>
-              <p class="text-center font-bold text-2xl">leader board</p>
+              <p class="text-center font-bold text-2xl">Arena Questions</p>
             </template>
             <ArenaQuestions v-if="showGear && offlineMode === false" @nominate="nominate" />
 
@@ -329,11 +335,11 @@ const show_countTime = computed(() => {
             <template class="" #header>
               <p class="text-center font-bold text-2xl">leader board</p>
             </template>
-            <div v-if="participants"
-              class="disable-scrollbars  flex flex-nowrap flex-col mx-auto mt-4 transition-container max-h-[10rem] hover:max-h-[28rem]  gap-4 overflow-y-scroll border-y-4 border-y-indigo-300 px-4 rounded-3xl">
+            <div v-if="ranks"
+              class="disable-scrollbars  flex flex-nowrap flex-col mx-auto mt-4 transition-container max-h-[15rem] hover:max-h-[35rem]  gap-4 overflow-y-scroll border-y-4 border-y-indigo-300 px-4 rounded-3xl">
               <TransitionGroup name="list">
-                <ArenaPlayer v-for="(item, index) in rank" :key="item.userId" :item="item" :img="index" :name="item"
-                  :max="arena?.totalStages" :participants="isOnline(item.userId)" />
+                <ArenaPlayer v-for="(item, index) in ranks" :key="item.name" :item="item" :img="index" :name="item"
+                  :max="arena?.totalStages" :participants="isOnline(item.id)" />
               </TransitionGroup>
             </div>
 
@@ -354,12 +360,12 @@ const show_countTime = computed(() => {
       <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
       <p>{{ arena }}</p>
       <h1 class=" truncate">{{ token }}</h1>
-      <code>{{ rank }}</code>
+      <code>{{ ranks }}</code>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .disable-scrollbars::-webkit-scrollbar {
   background: transparent;
   /* Chrome/Safari/Webkit */

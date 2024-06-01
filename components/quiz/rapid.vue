@@ -36,7 +36,7 @@ const btnType = ref('button')
 const startQuiz = async () => {
   rapidData.difficulty = selected.value.id
   if (selected.value.id === '1') {
-    useQuiz.setTime(30)
+    useQuiz.setTime(10)
   } else if (selected.value.id === '2') {
     useQuiz.setTime(60)
   } else if (selected.value.id === '3') {

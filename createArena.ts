@@ -3,11 +3,11 @@ export interface CreateArena {
   accessToken: string;
 }
 
-export interface Ranks {
-  name: string;
-  userId: string;
-  rank: number;
-}
+// export interface Ranks {
+//   name: string;
+//   userId: string;
+//   rank: number;
+// }
 
 export interface arenaForDto {
   arenaGear: ArenaQear[];
@@ -69,7 +69,7 @@ export interface Arena_updated_data {
   participants: participant;
   nominations: any;
   un_Solved_Quseions: any[];
-  rankings: any[];
+  rankings: Ranks[] | null;
   results: any[];
   totalStages: number;
   currentStage: number;
@@ -82,6 +82,13 @@ export interface participant {
 export interface part {
   name: string;
   isOnline: boolean;
+}
+
+export interface Ranks {
+  name: string;
+  id: string;
+  score: number;
+  questions: number;
 }
 
 type NominationID = string;
