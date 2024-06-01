@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import type { OfflinePlayers, part } from '~/createArena';
 
-const props = defineProps(['offlinePlayer'])
+const props = defineProps(['offlinePlayer','admin'])
 const emit = defineEmits(['remove_participant'])
 const offlinePlayer = ref<OfflinePlayers>(props.offlinePlayer)
+const isAdmin = props.admin
 const color = ref()
 
 const remove_participant = () => {
@@ -34,12 +35,12 @@ onMounted(() => {
     <p class=" text-lg font-bold">{{ offlinePlayer.name }}</p>
   </div>
   <template #delete="{item}">
-    <UButton @click="remove_participant" color="red"  :label="item.label" block/>
+    <UButton @click="remove_participant" :disabled="isAdmin" color="red"  :label="item.label" block/>
   </template>
 </UDropdown>
 </div>
 
-
+                                                                                                      
 
 
 </template>

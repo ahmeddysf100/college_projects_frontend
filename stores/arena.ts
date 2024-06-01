@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, arenaForDto, joinArenaDto } from "~/createArena";
+import type { Arena, Arena_updated, Arena_updated_data, Arena_updated_gear, arenaForDto, JoinArena, joinArenaDto } from "~/createArena";
 import type { CreateArena } from "~/createArena";
 
 export const useArenaStore = defineStore("arena", () => {
@@ -69,7 +69,7 @@ export const useArenaStore = defineStore("arena", () => {
     try {
       set_user_arena_token();
       setArena();
-      const req = await $fetch<CreateArena>(
+      const req = await $fetch<JoinArena>(
         `http://${ip}:3333/arena/join`,
         {
           method: "POST",
@@ -89,6 +89,7 @@ export const useArenaStore = defineStore("arena", () => {
         set_user_arena_token(req.accessToken);
         refreshCookie("userArenaToken");
         setArena(req.arena.id);
+        set_admin_arena_id(req.userId);
 
         setArenaData(req);
       }

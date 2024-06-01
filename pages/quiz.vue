@@ -32,14 +32,14 @@ const clicked = (e: any) => {
       quiz.random = true;
       outlineRandom.value = 'text-green-500 dark:text-green-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-[#ace5af] selectedBTN';
       break;
-    case 'subject':
-      quiz.subject = true;
-      outlineSubject.value = 'text-yellow-500 dark:text-yellow-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-yellow-200 selectedBTN';
-      break;
     case 'rapid':
       quiz.rapid = true;
-      outlineRapid.value = 'text-rose-500 dark:text-rose-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-rose-200  selectedBTN';
+      outlineRapid.value =  'text-rose-500   dark:text-rose-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-rose-200  selectedBTN';
       break;
+    // case 'subject':
+    //   quiz.subject = true;
+    //   outlineSubject.value = 'text-yellow-500 dark:text-yellow-600 font-bold text-xl tracking-wide underline decoration-2 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 ring-[5px] ring-yellow-200 selectedBTN';
+    //   break;
     default:
       console.log('noo matches for switch');
       break;
@@ -54,20 +54,22 @@ const clicked = (e: any) => {
         :ui="{ border: { base: 'border_gradient_gray', size: { horizontal: 'border-t-4' } }, label: 'sm:text-3xl text-xl  text-primary-500 dark:text-primary-400 ' }" />
 
       <div class="grid grid-cols-6 gap-5 text-center mt-10">
+
         <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineRandom"
-          class=" animate-moving-gradient mb-4 transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-r from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-2 col-span-4">
+          class=" animate-moving-gradient mb-4 transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-r from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-2  col-span-4">
           random
         </UButton>
 
-        <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineSubject"
-          class=" animate-moving-gradient transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-r from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-1 col-end-3">
-          subject
-        </UButton>
-
         <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineRapid"
-          class=" animate-moving-gradient transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 rounded-md bg-gradient-to-l from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-end-7 col-span-2">
+          class=" animate-moving-gradient mb-4 transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-l from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-2  col-span-4">
           rapid
         </UButton>
+
+        <!-- <UButton @click="clicked" :ui="{ rounded: 'borderRadius' }" block :class="outlineSubject"
+          class=" animate-moving-gradient transition ease-in-out hover:-skew-x-10 hover:-translate-y-4 hover:scale-x-110 duration-300 h-24 rounded-md bg-gradient-to-r from-[#5EB863] via-[#87B85E] to-[#b0e4b4] col-start-1 col-end-3">
+          subject
+        </UButton> -->
+
       </div>
     </UCard>
 

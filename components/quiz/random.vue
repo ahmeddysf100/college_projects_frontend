@@ -5,7 +5,7 @@
 const useQuiz = useMyQuizStore()
 const useDash = useDashboardStore()
 
-const selectList = [
+const selectList_difficulty = [
   {
     label: 'Normal',
     id: '1'
@@ -19,11 +19,73 @@ const selectList = [
     id: '3'
   },
 ]
-const selected = ref(selectList[0])
-const randomData = reactive({
-  count: '20',
-  difficulty: '',
-})
+const selectList_time = [
+  {
+    label: '20 minutes',
+    id: 1200
+  },
+  {
+    label: '10 minutes',
+    id: 600
+  },
+  {
+    label: '5 minutes',
+    id: 300
+  },
+]
+const selectList_num = [
+  {
+    label: '10',
+    id: '10'
+  },
+  {
+    label: '20',
+    id: '20'
+  },
+  {
+    label: '30',
+    id: '30'
+  },
+  {
+    label: '40',
+    id: '40'
+  },
+  {
+    label: '50',
+    id: '50'
+  },
+]
+const selectList_Subject = [
+  {
+    label: 'random',
+    id: 'random'
+  },
+  {
+    label: 'ashkal',
+    id: 'ashkal'
+  },
+  {
+    label: 'lost numbers',
+    id: 'lost numbers'
+  },
+  {
+    label: 'verbal',
+    id: 'verbal'
+  },
+  {
+    label: 'Sequences',
+    id: 'Sequences'
+  },
+  {
+    label: 'Arithmetic and logical operations',
+    id: 'Arithmetic and logical operations'
+  },
+]
+const selected_difficulty = ref(selectList_difficulty[0])
+const selected_num = ref(selectList_num[0])
+const selected_Subject = ref(selectList_Subject[0])
+const selected_time = ref(selectList_time[0])
+
 
 
 const blob = ref<any>([]);
@@ -32,15 +94,14 @@ const userAnswer = ref<any[]>([])
 const rawData = ref()
 
 const startQuiz = async () => {
-  randomData.difficulty = selected.value.id
-  if (selected.value.id === '1') {
-    useQuiz.setTime(1000)
-  } else if (selected.value.id === '2') {
-    useQuiz.setTime(600)
-  } else if (selected.value.id === '3') {
-    useQuiz.setTime(300)
-  }
-  // console.log(randomData)
+  useQuiz.setTime(selected_time.value.id)
+
+  const randomData = {
+  count: selected_num.value.id,
+  difficulty: selected_difficulty.value.id,
+  subject: selected_Subject.value.id,
+}
+  console.log(randomData)
   await useQuiz.getRandomQuestions(randomData)
 
 
@@ -211,7 +272,7 @@ onUnmounted(() => {
 </script>
 
 
-<template >
+<template>
   <div>
     <div>
       <h1 class=" tracking-wide font-bold text-xl text-green-500">Random :</h1>
@@ -219,13 +280,27 @@ onUnmounted(() => {
         dignissimos ducimus, blanditiis id, iure accusantium rem laboriosam debitis repudiandae, ea a mollitia quaerat
         eaque at molestiae consectetur unde reiciendis.</p>
     </div>
-    <div class=" grid justify-items-center my-8">
-      <UFormGroup class="sm:w-96 w-52  mb-6" label="Difficulty" help="choose the difficulty of questions" required>
-        <USelectMenu size="xl" v-model="selected" :options="selectList" />
+    <div class=" grid grid-cols-2 justify-items-center my-8">
+      <UFormGroup class="sm:w-60 w-auto mb-6" label="Difficulty" help="choose the difficulty of questions" required>
+        <USelectMenu size="xl" v-model="selected_difficulty" :options="selectList_difficulty" />
       </UFormGroup>
 
-      <UButton @click="startQuiz" class="sm:w-96 w-52 text-2xl" label="start" size="xl" block :loading="rawData" />
+      <UFormGroup class="sm:w-60 w-auto  mb-6" label="Number 0f questions" help="choose woh many questions you need"
+        required>
+        <USelectMenu size="xl" v-model="selected_num" :options="selectList_num" />
+      </UFormGroup>
+
+      <UFormGroup class="sm:w-60 w-auto mb-6" label="Subject" help="choose the subject of questions" required>
+        <USelectMenu size="xl" v-model="selected_Subject" :options="selectList_Subject" />
+      </UFormGroup>
+
+      <UFormGroup class="sm:w-60 w-auto mb-6" label="Time" help="choose the total time for all questions" required>
+        <USelectMenu size="xl" v-model="selected_time" :options="selectList_time" />
+      </UFormGroup>
+
     </div>
+    <UButton @click="startQuiz" class="sm:w-96 w-52 text-2xl mx-auto" label="start" size="xl" block
+      :loading="rawData ? true : false" />
 
 
     <!-- <QuizQuestion/> -->

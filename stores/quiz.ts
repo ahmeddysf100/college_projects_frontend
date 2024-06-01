@@ -20,7 +20,7 @@ export const useMyQuizStore = defineStore("quiz", () => {
     // console.table(data);
     try {
       const res = await $fetch<any>(
-        `http://${ip}:3333/quiz/${data.count}/${data.difficulty}/random`
+        `http://${ip}:3333/quiz/${data.count}/${data.difficulty}/${data.subject}`
       );
       // console.log(res);
       // if (res.HttpStatus === 201) {

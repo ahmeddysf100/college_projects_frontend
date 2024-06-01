@@ -141,7 +141,7 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  <div class="grid">
+  <div class="grid my-4">
     <UButton @click="submit" :loading="loadingBtn" class=" w-80 mx-auto text-2xl font-bold  " label="submit" size="xl" block />
   </div>
 </template>

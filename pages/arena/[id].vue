@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { io } from "socket.io-client";
 import { Clipboard } from "v-clipboard";
+import { any } from "zod";
 import type { Arena, OfflinePlayers, Arena_updated, Arena_updated_data, Arena_updated_gear, part, participant, Ranks } from "~/createArena";
 const useUser = useUserStore()
 const useArena = useArenaStore()
@@ -9,11 +10,13 @@ const toast = useToast()
 const ip = useRuntimeConfig().public.IP_HOME;
 
 const token = useCookie('userArenaToken')
-const adminId = useCookie('adminArenaId')
+const userId = useCookie('adminArenaId')
 const arena = ref<Arena_updated_data | null>(null); // Initialize as null
 const gear = ref<Arena_updated_gear | string>(); // Initialize as null
 const showGear = ref<boolean>(false)
 const offlinePlayers = ref<OfflinePlayers[]>()
+const arenaAdminId = ref()
+
 
 // const participants = computed(() => arenaData); // Use computed to ensure reactivity
 const participants = computed(() => arena.value?.participants); // Use computed to ensure reactivity
@@ -32,7 +35,7 @@ const socket = io(`ws://${ip}:3333/arena`, {
   auth: {
     token: token.value,
   },
-  transports:['websocket'], 
+  transports: ['websocket'],
 
 });
 
@@ -68,6 +71,7 @@ onMounted(() => {
     arena.value = data.arenaData;
     gear.value = data.gearData;
     useArena.arena_updated_gear = data.gearData
+    arenaAdminId.value = data.arenaData.adminId
 
     console.log(arena.value?.participants)
     // console.log('gear',data.gearData)
@@ -115,6 +119,27 @@ onMounted(() => {
 
 
 })
+
+const admin = reactive({
+  name: '',
+  privilege: false
+})
+watch(arenaAdminId, (newValue) => {
+  console.log('admiiin', newValue)
+  console.log('player id', userId.value)
+
+  if (newValue == userId.value) {
+    console.log('neew admiiin', newValue)
+    admin.privilege = true
+  } else {
+    admin.privilege = false
+  }
+  let adminName = participants.value?.[`${newValue}`].name || ''
+ admin.name = adminName
+})
+
+
+
 type ArenaUpdatedGearOrString = Arena_updated_gear | string | null;
 
 const question = computed(() => useArena.arena_updated_gear as ArenaUpdatedGearOrString)
@@ -146,7 +171,7 @@ watch(question, async (newValue) => {
 
 const offlineMode = ref(false);
 watch(arena, async (newValue) => {
-
+console.log('offline players',offlinePlayers.value)
   //(offlinePlayers.value?.length ?? 0) checks if offlinePlayers.value is undefined. If it is, it uses 0 as the default value for the length property.
   //This ensures that even if offlinePlayers.value is undefined, the expression (offlinePlayers.value?.length ?? 0) will always result in a number, preventing the TypeScript warning.
   if (newValue?.hasStarted === true && (offlinePlayers.value?.length ?? 0) > 0) {
@@ -160,7 +185,12 @@ watch(arena, async (newValue) => {
     console.log('onn onn onn');
   }
 
+
 })
+
+
+
+
 
 const startArena = () => {
   socket.emit('start_arena', (data: any) => {
@@ -244,22 +274,23 @@ const show_countTime = computed(() => {
 
 <template>
 
-<div v-if="is_Stages_Finshed === false">
-  <UModal v-model="offlineMode"
-    :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" fullscreen>
-    <div class=" mt-40 grid place-content-center">
-      <h1 class="font-extrabold text-pretty text-3xl text-center">Waiting for players to return. Only the admin can kick
-        offline
-        players
-      </h1>
-      <div class="loader my-8 mx-auto "></div>
-      <div class="centerDevXY flex flex-wrap justify-center ">
-        <ArenaWaitForPlayers v-for="(item, index) in offlinePlayers" :key="index"
-          @remove_participant="remove_participant" :offlinePlayer="item" />
+  <div v-if="is_Stages_Finshed === false">
+    <UModal v-model="offlineMode" :ui="{ background: 'bg-gray-200/[0] dark:bg-gray-800/[0]' }" fullscreen>
+      <div class=" mt-40 grid place-content-center">
+        <h1 class="font-extrabold text-pretty text-3xl text-center">Waiting for players to return. Only the admin ({{
+          admin.name }}) can
+          kick
+          offline
+          players
+        </h1>
+        <div class="loader my-8 mx-auto "></div>
+        <div class="centerDevXY flex flex-wrap justify-center ">
+          <ArenaWaitForPlayers v-for="(item, index) in offlinePlayers" :key="index"
+            @remove_participant="remove_participant" :admin="!admin.privilege" :offlinePlayer="item" />
+        </div>
       </div>
-    </div>
-  </UModal>
-</div>
+    </UModal>
+  </div>
 
 
   <div>
@@ -351,13 +382,14 @@ const show_countTime = computed(() => {
         </div>
       </div>
       <div class="grid">
-        <UButton @click="startArena" class=" w-80 mx-auto text-2xl font-bold  " label="start" size="xl" block />
+        <UButton @click="startArena" :disabled="!admin.privilege" class=" w-80 mx-auto text-2xl font-bold  "
+          label="start" size="xl" block />
       </div>
 
 
 
       <h1 class="text-center mt-10 text-red-500">{{ rout.params.id }}</h1>
-      <h1 class="text-center mt-10 text-green-500">{{ adminId }}</h1>
+      <h1 class="text-center mt-10 text-green-500">{{ userId }}</h1>
       <p>{{ arena }}</p>
       <h1 class=" truncate">{{ token }}</h1>
       <code>{{ ranks }}</code>

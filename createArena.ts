@@ -2,6 +2,11 @@ export interface CreateArena {
   arena: Arena;
   accessToken: string;
 }
+export interface JoinArena {
+  arena: Arena;
+  accessToken: string;
+  userId: string
+}
 
 // export interface Ranks {
 //   name: string;
